@@ -1,12 +1,15 @@
 {
-  "name": "electron-quick-start-typescript",
+  "name": "project-delta",
   "version": "1.0.0",
-  "description": "A minimal Electron application written with Typescript",
+  "description": "multiplayer game",
+  "main": "./dist/main.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
-    "start": "npm run build && electron ./dist/main.js"
+    "start": "tsc && npx webpack --config webpack.config.js && electron-forge start",
+    "package": "electron-forge package",
+    "make": "npm run build && electron-forge make"
   },
   "repository": "https://github.com/electron/electron-quick-start-typescript",
   "keywords": [
@@ -20,11 +23,23 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
+    "@electron-forge/cli": "^6.4.2",
+    "@electron-forge/maker-deb": "^6.4.2",
+    "@electron-forge/maker-rpm": "^6.4.2",
+    "@electron-forge/maker-squirrel": "^6.4.2",
+    "@electron-forge/maker-zip": "^6.4.2",
+    "@electron-forge/plugin-auto-unpack-natives": "^6.4.2",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "electron": "^24.3.0",
     "eslint": "^7.32.0",
-    "typescript": "^4.8.3"
+    "ts-loader": "^9.5.0",
+    "typescript": "^4.8.3",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "colyseus.js": "^0.15.14",
+    "electron-squirrel-startup": "^1.0.0"
+  }
 }
