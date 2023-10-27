@@ -1,13 +1,32 @@
 import { app, BrowserWindow } from "electron";
 import * as path from "path";
 
+const { Server } = require("socket.io");
+const express = require("express");
+const expressApp = express();
+const http = require("http");
+const server = http.createServer(expressApp).listen(3001, () => {
+  console.log("listening on *:3001");
+});
+const io = new Server(server);
+
+expressApp.get("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
+});
+
+io.on("connection", (socket) => {
+  console.log("a user connected");
+  socket.on("test", (msg) => {
+    console.log("test received", msg);
+  });
+});
+
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-      nodeIntegration: true,
     },
     width: 800,
   });
