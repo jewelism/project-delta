@@ -10,16 +10,7 @@ const socket = (window as any).io(`http://localhost:3001`);
 socket.on("error", (e) => {
   console.log(e); // not displayed
 });
-socket.on("ok", () => {
-  console.log("OK received renderer"); // not displayed
-});
 socket.on("connect", () => {
-  console.log("connected renderer"); // displayed
-  // socket.emit("test", "test msg");
+  console.log("connected renderer", localStorage.getItem("token")); // displayed
+  socket.emit("test", "test msg1");
 });
-
-setTimeout(() => {
-  console.log("sending test msg");
-
-  socket.emit("test", "test msg");
-}, 2000);
