@@ -5,16 +5,23 @@ import icon from '../../resources/icon.png?asset';
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
+// import { Server } from 'colyseus';
 
-// const express = require('express')
+const port = Number(import.meta.env.MAIN_VITE_PORT);
+
 const expressApp = express();
+// expressApp.use(express.json());
 
-expressApp.get('/', (_req, res) => {
-  res.sendFile(__dirname + '/index.html');
-});
+// const gameServer = new Server({
+//   server: http.createServer(expressApp),
+// }).listen(port);
 
-const server = http.createServer(expressApp).listen(20058, () => {
-  console.log('listening on *:3001');
+// expressApp.get('/', (_req, res) => {
+//   res.sendFile(__dirname + '/index.html');
+// });
+
+const server = http.createServer(expressApp).listen(port, () => {
+  console.log(`listening on *:${port}`);
 });
 const io = new Server(server);
 

@@ -4,6 +4,7 @@ export function init(): void {
   window.addEventListener('DOMContentLoaded', () => {
     doAThing();
 
+    // TODO: input address
     const socket = io(`http://localhost:20058`);
 
     socket.on('error', (e) => {
