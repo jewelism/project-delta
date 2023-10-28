@@ -7,11 +7,11 @@ const config: Phaser.Types.Core.GameConfig = {
   url: 'jewelism.github.io',
   type: Phaser.WEBGL,
   // type: Phaser.CANVAS,
-  pixelArt: true,
   scale: {
-    mode: Phaser.Scale.FIT,
-    width: 667 * 1.5,
-    height: 375 * 1.5,
+    // mode: Phaser.Scale.FIT,
+    mode: Phaser.Scale.ENVELOP,
+    width: Number(import.meta.env.RENDERER_VITE_WINDOW_WIDTH),
+    height: Number(import.meta.env.RENDERER_VITE_WINDOW_HEIGHT),
   },
   physics: {
     default: 'arcade',

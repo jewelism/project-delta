@@ -35,8 +35,8 @@ io.on('connection', (socket) => {
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width: import.meta.env.MAIN_VITE_WINDOW_WIDTH,
+    height: import.meta.env.MAIN_VITE_WINDOW_HEIGHT,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),

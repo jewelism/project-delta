@@ -1,4 +1,3 @@
-import io from 'socket.io-client';
 import { createPhaser } from '@/phaser';
 
 function init(): void {
