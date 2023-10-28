@@ -12,7 +12,7 @@
     "esModuleInterop": true,
     "types": ["vite/client"],
     "noEmit": true,
-    "noUnusedParameters": true,
+    "noUnusedParameters": false,
     "noImplicitReturns": true,
     "allowJs": true,
     "noImplicitAny": false,

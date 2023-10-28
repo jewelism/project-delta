@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 
 import { StartScene } from '@/phaser/scenes/StartScene';
+import { MultiplayLobbyScene } from '@/phaser/scenes/MultiplayLobbyScene';
 
 const config: Phaser.Types.Core.GameConfig = {
   title: 'project alpha',
@@ -19,10 +20,14 @@ const config: Phaser.Types.Core.GameConfig = {
       debug: true,
     },
   },
-  // parent: "body",
+  parent: 'body',
   render: { pixelArt: true, antialias: false },
+  dom: {
+    createContainer: true,
+  },
   scene: [
     StartScene,
+    MultiplayLobbyScene,
     // InGameScene,
   ],
   // backgroundColor: '#222',

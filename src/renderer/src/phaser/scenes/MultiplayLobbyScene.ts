@@ -1,33 +1,25 @@
 import { TitleText } from '@/phaser/ui/TitleText';
+import { Socket, io } from 'socket.io-client';
 
-export class StartScene extends Phaser.Scene {
+export class MultiplayLobbyScene extends Phaser.Scene {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  socket: Socket;
 
   constructor() {
-    super('StartScene');
+    super('MultiplayLobbyScene');
   }
   preload() {
     this.load.html('multiplay_form', 'phaser/multiplay_form.html');
     // this.load.image('icon', 'phaser/icon.png');
   }
   create() {
+    this.socket = this.getSocketConnection();
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    const title = new TitleText(this, 'Project Delta');
+    const title = new TitleText(this, 'Lobby');
 
     // const icon = this.add.image(400, 300, 'icon');
-    const element = this.add.dom(title.x, 400).createFromCache('multiplay_form');
-    element.addListener('click');
-    element.on('click', ({ target: { name } }) => {
-      console.log('click', name);
 
-      if (name === 'createMulti') {
-        this.scene.start('MultiplayLobbyScene');
-      }
-      if (name === 'joinMulti') {
-        this.scene.start('MultiplayLobbyScene');
-      }
-    });
     // const pressAnyKeyText = this.add
     //   // .text(title.x, title.y + 500, 'press any key', {
     //   .text(50, 50, 'press any key', {
@@ -44,5 +36,21 @@ export class StartScene extends Phaser.Scene {
     //   yoyo: true,
     //   repeat: -1,
     // });
+    const onKeydown = () => {
+      this.socket.emit('test', 'test msg1');
+      // this.scene.start('SelectLevelScene');
+    };
+    this.input.keyboard.on('keydown', onKeydown);
+    this.input.on('pointerdown', onKeydown);
+  }
+  getSocketConnection() {
+    const socket = io(`http://localhost:20058`);
+    socket.on('error', (e) => {
+      console.log(e); // not displayed
+    });
+    socket.on('connect', () => {
+      console.log('connected renderer', localStorage.getItem('token')); // displayed
+    });
+    return socket;
   }
 }
