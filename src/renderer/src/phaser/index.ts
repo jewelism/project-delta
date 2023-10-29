@@ -26,7 +26,10 @@ const config: Phaser.Types.Core.GameConfig = {
   dom: {
     createContainer: true,
   },
-  scene: [StartScene, MultiplayLobbyScene, InGameScene],
+  scene: [
+    // StartScene, MultiplayLobbyScene,
+    InGameScene,
+  ],
   // backgroundColor: '#222',
   // fps: {
   //   target: 10,

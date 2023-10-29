@@ -13,6 +13,7 @@ export class InGameScene extends Phaser.Scene {
   preload() {
     this.load.tilemapTiledJSON('map', 'phaser/tiled/map.json');
     this.load.image('16tiles', 'phaser/tiled/16tiles.png');
+    this.load.image('rock', 'phaser/objects/rock31x29.png');
 
     // this.load.spritesheet('sword1', 'assets/upgrade_icon.png', {
     //   frameWidth: 32,
@@ -144,13 +145,37 @@ export class InGameScene extends Phaser.Scene {
       key: 'map',
     });
     const bgTiles = map.addTilesetImage('16tiles', '16tiles');
-    map.createLayer('bg', bgTiles);
+    const bgLayer = map.createLayer('bg', bgTiles);
 
     const playerSpawnPoints = map.findObject('PlayerSpawn', ({ name }) => {
       return name.includes('PlayerSpawn');
     });
 
-    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    scene.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    const resourceTiles: Phaser.Tilemaps.Tile[] = [];
+    bgLayer.forEachTile((tile, index) => {
+      const tileGap = Phaser.Math.RND.pick(Array.from({ length: 20 }, (_, i) => i + 10));
+      const resourceGapCheck = resourceTiles.some((rockTile) => {
+        if (Math.abs(rockTile.x - tile.x) < tileGap && Math.abs(rockTile.y - tile.y) < tileGap) {
+          return true;
+        }
+        return false;
+      });
+      if (resourceGapCheck) {
+        return;
+      }
+      // last tiles
+      if (index > 39000) {
+        return;
+      }
+      // rock or another resource
+      const resouce = scene.add.image(tile.pixelX, tile.pixelY, 'rock').setOrigin(0, 0);
+      scene.physics.add.existing(resouce);
+      scene.physics.world.enableBody(resouce);
+      scene.physics.add.collider(resouce, (scene as any).player);
+      resourceTiles.push(tile);
+    });
 
     return { map, playerSpawnPoints };
   }
