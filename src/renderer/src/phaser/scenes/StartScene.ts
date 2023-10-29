@@ -21,6 +21,9 @@ export class StartScene extends Phaser.Scene {
     element.on('click', ({ target: { name } }) => {
       console.log('click', name);
 
+      if (name === 'singleplayButton') {
+        this.scene.start('InGameScene');
+      }
       if (name === 'createMulti') {
         this.scene.start('MultiplayLobbyScene');
       }
