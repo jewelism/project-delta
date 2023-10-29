@@ -1,4 +1,5 @@
 import { Player } from '@/phaser/objects/Player';
+import { isWithinGap } from '@/phaser/utils';
 
 export class InGameScene extends Phaser.Scene {
   enemies: Phaser.Physics.Arcade.Group;
@@ -15,11 +16,11 @@ export class InGameScene extends Phaser.Scene {
     this.load.image('16tiles', 'phaser/tiled/16tiles.png');
     this.load.image('rock', 'phaser/objects/rock31x29.png');
 
-    // this.load.spritesheet('sword1', 'assets/upgrade_icon.png', {
-    //   frameWidth: 32,
-    //   frameHeight: 32,
-    //   startFrame: 0,
-    // });
+    this.load.spritesheet('tree', 'phaser/objects/tree45x45.png', {
+      frameWidth: 45,
+      frameHeight: 45,
+      startFrame: 0,
+    });
 
     this.load.spritesheet('alex', 'phaser/players/spr_alex.png', {
       frameWidth: 16,
@@ -39,7 +40,7 @@ export class InGameScene extends Phaser.Scene {
     });
     this.cameras.main
       .setBounds(0, 0, map.heightInPixels, map.widthInPixels)
-      .setZoom(2)
+      .setZoom(1)
       .startFollow(this.player);
 
     // this.bunker = new Bunker(this);
@@ -155,9 +156,9 @@ export class InGameScene extends Phaser.Scene {
 
     const resourceTiles: Phaser.Tilemaps.Tile[] = [];
     bgLayer.forEachTile((tile, index) => {
-      const tileGap = Phaser.Math.RND.pick(Array.from({ length: 20 }, (_, i) => i + 10));
-      const resourceGapCheck = resourceTiles.some((rockTile) => {
-        if (Math.abs(rockTile.x - tile.x) < tileGap && Math.abs(rockTile.y - tile.y) < tileGap) {
+      const tileGap = Phaser.Math.RND.pick(Array.from({ length: 20 }, (_, i) => i + 5));
+      const resourceGapCheck = resourceTiles.some((resourceTile) => {
+        if (isWithinGap(tile, resourceTile, tileGap)) {
           return true;
         }
         return false;
@@ -170,7 +171,7 @@ export class InGameScene extends Phaser.Scene {
         return;
       }
       // rock or another resource
-      const resouce = scene.add.image(tile.pixelX, tile.pixelY, 'rock').setOrigin(0, 0);
+      const resouce = this.getRandomResource(this, { x: tile.pixelX, y: tile.pixelY });
       scene.physics.add.existing(resouce);
       scene.physics.world.enableBody(resouce);
       scene.physics.add.collider(resouce, (scene as any).player);
@@ -178,6 +179,14 @@ export class InGameScene extends Phaser.Scene {
     });
 
     return { map, playerSpawnPoints };
+  }
+  getRandomResource(scene, { x, y }) {
+    const rnd = Phaser.Math.RND.pick([0, 1]);
+    if (rnd === 0) {
+      return scene.add.image(x, y, 'rock').setOrigin(0, 0).setScale(0.7);
+    }
+
+    return scene.add.image(x, y, 'tree').setOrigin(0, 0).setScale(0.6);
   }
   // createEnemy() {
   //   const phaseData = getPhaseData();
