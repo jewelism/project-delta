@@ -172,6 +172,8 @@ export class InGameScene extends Phaser.Scene {
       }
       // rock or another resource
       const resouce = this.getRandomResource(this, { x: tile.pixelX, y: tile.pixelY });
+      console.log('resouce', resouce.name);
+
       scene.physics.add.existing(resouce);
       scene.physics.world.enableBody(resouce);
       scene.physics.add.collider(resouce, (scene as any).player);
@@ -180,13 +182,13 @@ export class InGameScene extends Phaser.Scene {
 
     return { map, playerSpawnPoints };
   }
-  getRandomResource(scene, { x, y }) {
+  getRandomResource(scene: Phaser.Scene, { x, y }) {
     const rnd = Phaser.Math.RND.pick([0, 1]);
     if (rnd === 0) {
-      return scene.add.image(x, y, 'rock').setOrigin(0, 0).setScale(0.7);
+      return scene.add.image(x, y, 'rock').setOrigin(0, 0).setScale(0.7).setName('rock');
     }
 
-    return scene.add.image(x, y, 'tree').setOrigin(0, 0).setScale(0.6);
+    return scene.add.image(x, y, 'tree').setOrigin(0, 0).setScale(0.6).setName('tree');
   }
   // createEnemy() {
   //   const phaseData = getPhaseData();
