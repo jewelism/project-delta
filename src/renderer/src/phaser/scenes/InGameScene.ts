@@ -1,4 +1,5 @@
 import { Player } from '@/phaser/objects/Player';
+import { Resource } from '@/phaser/objects/Resource';
 import { isWithinGap } from '@/phaser/utils';
 
 export class InGameScene extends Phaser.Scene {
@@ -7,6 +8,7 @@ export class InGameScene extends Phaser.Scene {
   projectiles: Phaser.Physics.Arcade.Group;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   player: Player;
+  resources: Phaser.Physics.Arcade.Group;
 
   constructor() {
     super('InGameScene');
@@ -29,9 +31,12 @@ export class InGameScene extends Phaser.Scene {
   }
   create() {
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.resources = this.physics.add.group({
+      immovable: true,
+    });
+
     this.createUI(this);
     const { map, playerSpawnPoints } = this.createMap(this);
-    console.log('playerSpawnPoints', playerSpawnPoints);
 
     this.player = new Player(this, {
       sprite: 'alex',
@@ -43,6 +48,9 @@ export class InGameScene extends Phaser.Scene {
       .setZoom(1)
       .startFollow(this.player);
 
+    this.physics.add.collider(this.resources, this.player, () => {
+      console.log('collide');
+    });
     // this.bunker = new Bunker(this);
 
     // this.gaugeBar = new GaugeBar(this, {
@@ -147,48 +155,40 @@ export class InGameScene extends Phaser.Scene {
     });
     const bgTiles = map.addTilesetImage('16tiles', '16tiles');
     const bgLayer = map.createLayer('bg', bgTiles);
-
     const playerSpawnPoints = map.findObject('PlayerSpawn', ({ name }) => {
       return name.includes('PlayerSpawn');
     });
 
     scene.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    const resourceTiles: Phaser.Tilemaps.Tile[] = [];
     bgLayer.forEachTile((tile, index) => {
-      const tileGap = Phaser.Math.RND.pick(Array.from({ length: 20 }, (_, i) => i + 5));
-      const resourceGapCheck = resourceTiles.some((resourceTile) => {
-        if (isWithinGap(tile, resourceTile, tileGap)) {
-          return true;
+      const tileGap = Phaser.Math.RND.pick(
+        Array.from({ length: 20 }, (_, i) => tile.width * (i + 5)),
+      );
+      const resourceGapCheck = this.resources.getChildren().every((resource) => {
+        if (isWithinGap(tile, resource, tileGap)) {
+          return false;
         }
-        return false;
+        return true;
       });
-      if (resourceGapCheck) {
+      if (!resourceGapCheck) {
         return;
       }
       // last tiles
       if (index > 39000) {
         return;
       }
-      // rock or another resource
-      const resouce = this.getRandomResource(this, { x: tile.pixelX, y: tile.pixelY });
-      console.log('resouce', resouce.name);
-
-      scene.physics.add.existing(resouce);
-      scene.physics.world.enableBody(resouce);
-      scene.physics.add.collider(resouce, (scene as any).player);
-      resourceTiles.push(tile);
+      const resource = this.getRandomResource(this, { x: tile.pixelX, y: tile.pixelY });
+      scene.physics.add.existing(resource, true);
+      this.resources.add(resource);
     });
-
     return { map, playerSpawnPoints };
   }
   getRandomResource(scene: Phaser.Scene, { x, y }) {
-    const rnd = Phaser.Math.RND.pick([0, 1]);
-    if (rnd === 0) {
-      return scene.add.image(x, y, 'rock').setOrigin(0, 0).setScale(0.7).setName('rock');
-    }
-
-    return scene.add.image(x, y, 'tree').setOrigin(0, 0).setScale(0.6).setName('tree');
+    return Phaser.Math.RND.pick([
+      () => new Resource(scene, { x, y, name: 'rock' }).setScale(0.7),
+      () => new Resource(scene, { x, y, name: 'tree' }).setScale(0.6),
+    ])();
   }
   // createEnemy() {
   //   const phaseData = getPhaseData();
