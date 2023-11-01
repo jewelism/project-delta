@@ -39,7 +39,7 @@ export class InGameScene extends Phaser.Scene {
     const { map, playerSpawnPoints } = this.createMap(this);
 
     this.player = new Player(this, {
-      sprite: 'alex',
+      spriteKey: 'alex',
       x: playerSpawnPoints.x,
       y: playerSpawnPoints.y,
     });
