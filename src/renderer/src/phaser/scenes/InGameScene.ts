@@ -48,9 +48,7 @@ export class InGameScene extends Phaser.Scene {
       .setZoom(1)
       .startFollow(this.player);
 
-    this.physics.add.collider(this.resources, this.player, () => {
-      console.log('collide');
-    });
+    this.physics.add.collider(this.resources, this.player);
     // this.bunker = new Bunker(this);
 
     // this.gaugeBar = new GaugeBar(this, {

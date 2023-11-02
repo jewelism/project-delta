@@ -1,7 +1,9 @@
+import { InGameScene } from '@/phaser/scenes/InGameScene';
+
 export class Player extends Phaser.Physics.Arcade.Sprite {
   attackTimer: Phaser.Time.TimerEvent;
   attackRange: number = 200;
-  attackSpeed: number = 300;
+  attackSpeed: number = 1000;
   damage: number;
   moveSpeed: number = 100;
   spriteKey: string;
@@ -36,6 +38,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene.physics.world.enableBody(this);
     this.setOrigin(0, 0).setBodySize(12, 18).setDepth(9).setCollideWorldBounds(true);
 
+    this.attackQ();
     // scene.m_beamSound.play();
   }
 
@@ -45,12 +48,42 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     //   this.attackTimer = this.scene.time.delayedCall(
     //     this.attackSpeed / GAME.speed,
     //     () => {
-    //       this.shoot();
+    //       this.attack();
     //       this.attackTimer = null;
     //     }
     //   );
     // }
   }
+  attack() {}
+  attackQ() {
+    // GATHER resources
+    let canPressQ = true;
+    this.scene.input.keyboard.on('keydown-Q', () => {
+      if (canPressQ) {
+        const { resources } = this.scene as InGameScene;
+        const closest: any = this.scene.physics.closest(this, resources.getChildren());
+
+        const { x: closestX, y: closestY } = closest.getCenter();
+        const { x, y } = this.getCenter();
+        const distance = Phaser.Math.Distance.Between(x, y, closestX, closestY);
+        console.log(distance, closest.width, closest.height);
+
+        if (distance > 30) {
+          return;
+        }
+        closest.setTint(0xff0000);
+        this.scene.time.delayedCall(150, () => {
+          closest.clearTint();
+        });
+
+        canPressQ = false;
+        this.scene.time.delayedCall(this.attackSpeed, () => {
+          canPressQ = true;
+        });
+      }
+    });
+  }
+  attackW() {}
   // get upgradeCost() {
   //   return this.damage * 2;
   // }
@@ -122,7 +155,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     } else {
       this.setVelocityX(0);
       this.setVelocityY(0);
-      this.anims.play(`${this.spriteKey}-idle`, true);
     }
   }
 }
