@@ -1,5 +1,6 @@
 import { Player } from '@/phaser/objects/Player';
 import { Resource } from '@/phaser/objects/Resource';
+import { StatusText } from '@/phaser/ui/StatusText';
 import { isWithinGap } from '@/phaser/utils';
 
 export class InGameScene extends Phaser.Scene {
@@ -42,6 +43,19 @@ export class InGameScene extends Phaser.Scene {
       spriteKey: 'alex',
       x: playerSpawnPoints.x,
       y: playerSpawnPoints.y,
+    });
+
+    new StatusText(this, {
+      x: Number(this.game.config.width) - 50,
+      y: 10,
+      text: '9999',
+      texture: 'rock',
+    });
+    new StatusText(this, {
+      x: Number(this.game.config.width) - 50,
+      y: 35,
+      text: '9999',
+      texture: 'tree',
     });
     this.cameras.main
       .setBounds(0, 0, map.heightInPixels, map.widthInPixels)

@@ -1,7 +1,7 @@
 export const getUIStyle = () => {
   return {
-    fontSize: '20px',
+    fontSize: '15px',
     color: '#ffffff',
-    align: 'right',
+    align: 'left',
   };
 };
