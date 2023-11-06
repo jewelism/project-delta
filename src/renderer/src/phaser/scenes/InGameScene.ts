@@ -1,6 +1,6 @@
 import { Player } from '@/phaser/objects/Player';
 import { Resource } from '@/phaser/objects/Resource';
-import { StatusText } from '@/phaser/ui/StatusText';
+import { ResourceState } from '@/phaser/ui/ResourceState';
 import { isWithinGap } from '@/phaser/utils';
 
 export class InGameScene extends Phaser.Scene {
@@ -10,6 +10,8 @@ export class InGameScene extends Phaser.Scene {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   player: Player;
   resources: Phaser.Physics.Arcade.Group;
+  rockState: ResourceState;
+  treeState: ResourceState;
 
   constructor() {
     super('InGameScene');
@@ -45,22 +47,36 @@ export class InGameScene extends Phaser.Scene {
       y: playerSpawnPoints.y,
     });
 
-    new StatusText(this, {
+    this.rockState = new ResourceState(this, {
       x: Number(this.game.config.width) - 50,
       y: 10,
-      text: '9999',
+      initAmount: 0,
       texture: 'rock',
     });
-    new StatusText(this, {
+    this.treeState = new ResourceState(this, {
       x: Number(this.game.config.width) - 50,
       y: 35,
-      text: '9999',
+      initAmount: 0,
       texture: 'tree',
     });
+    const graphics = this.add
+      .graphics({ fillStyle: { color: 0xff0000 } })
+      .fillCircle(0, 0, 5)
+      .setScale(12);
+    const playerIndicator = this.add.container(this.player.x, this.player.y, graphics);
     this.cameras.main
       .setBounds(0, 0, map.heightInPixels, map.widthInPixels)
-      .setZoom(1)
-      .startFollow(this.player);
+      .startFollow(this.player, false)
+      .ignore(playerIndicator);
+    this.cameras
+      .add(0, 0, 200, 200)
+      .setZoom(0.02)
+      .setOrigin(0, 0)
+      .ignore(this.player)
+      .setAlpha(0.5);
+    this.player.on('moved', () => {
+      playerIndicator.setPosition(this.player.x, this.player.y);
+    });
 
     this.physics.add.collider(this.resources, this.player);
     // this.bunker = new Bunker(this);

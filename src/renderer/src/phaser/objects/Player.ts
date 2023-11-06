@@ -119,6 +119,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     return this.moveSpeed;
   }
   playerMoveWithKeyboard() {
+    this.emit('moved');
     const { left, right, up, down } = (this.scene as any).cursors;
     if (left.isDown && up.isDown) {
       this.setVelocityX(-this.getMoveSpeed());
