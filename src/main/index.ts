@@ -39,6 +39,8 @@ function createWindow(): void {
     height: import.meta.env.MAIN_VITE_WINDOW_HEIGHT,
     show: false,
     autoHideMenuBar: true,
+    // fullscreen: true,
+    // resizable: false,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),

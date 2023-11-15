@@ -1,7 +1,7 @@
 import { Player } from '@/phaser/objects/Player';
 import { Resource } from '@/phaser/objects/Resource';
 import { ResourceState } from '@/phaser/ui/ResourceState';
-import { isWithinGap } from '@/phaser/utils';
+import { resourceGapCheck } from '@/phaser/utils';
 
 export class InGameScene extends Phaser.Scene {
   enemies: Phaser.Physics.Arcade.Group;
@@ -62,7 +62,7 @@ export class InGameScene extends Phaser.Scene {
     const graphics = this.add
       .graphics({ fillStyle: { color: 0xff0000 } })
       .fillCircle(0, 0, 5)
-      .setScale(12);
+      .setScale(20);
     const playerIndicator = this.add.container(this.player.x, this.player.y, graphics);
     this.cameras.main
       .setBounds(0, 0, map.heightInPixels, map.widthInPixels)
@@ -73,7 +73,7 @@ export class InGameScene extends Phaser.Scene {
       .setZoom(0.02)
       .setOrigin(0, 0)
       .ignore(this.player)
-      .setAlpha(0.5);
+      .setAlpha(0.7);
     this.player.on('moved', () => {
       playerIndicator.setPosition(this.player.x, this.player.y);
     });
@@ -183,41 +183,66 @@ export class InGameScene extends Phaser.Scene {
     });
     const bgTiles = map.addTilesetImage('16tiles', '16tiles');
     const bgLayer = map.createLayer('bg', bgTiles);
+    map.createLayer('bg_collision', bgTiles);
+    map.createLayer('MonsterSpawn', bgTiles);
     const playerSpawnPoints = map.findObject('PlayerSpawn', ({ name }) => {
       return name.includes('PlayerSpawn');
     });
-
+    const resourceSpawnPoints = map.filterObjects('ResourceSpawn', ({ name }) => {
+      return name.includes('ResourceSpawn');
+    });
+    this.generateResource(scene, resourceSpawnPoints, bgLayer);
     scene.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    bgLayer.forEachTile((tile, index) => {
-      const tileGap = Phaser.Math.RND.pick(
-        Array.from({ length: 20 }, (_, i) => tile.width * (i + 5)),
-      );
-      const resourceGapCheck = this.resources.getChildren().every((resource) => {
-        if (isWithinGap(tile, resource, tileGap)) {
-          return false;
-        }
-        return true;
-      });
-      if (!resourceGapCheck) {
-        return;
-      }
-      // last tiles
-      if (index > 39000) {
-        return;
-      }
-      const resource = this.getRandomResource(this, { x: tile.pixelX, y: tile.pixelY });
-      scene.physics.add.existing(resource, true);
-      this.resources.add(resource);
-    });
     return { map, playerSpawnPoints };
+  }
+  generateResource(
+    scene: Phaser.Scene,
+    resourceSpawnPoints: Phaser.Types.Tilemaps.TiledObject[],
+    bgLayer: Phaser.Tilemaps.TilemapLayer,
+  ) {
+    resourceSpawnPoints.forEach(({ x, y, width, height }) => {
+      const tiles = bgLayer.getTilesWithinWorldXY(x, y, width, height);
+      tiles.forEach((tile, index) => {
+        const tileGap = Phaser.Math.RND.pick(
+          Array.from({ length: 20 }, (_, i) => tile.width * (i + 5)),
+        );
+        if (!resourceGapCheck(tile, this.resources.getChildren(), tileGap)) {
+          return;
+        }
+        const resource = this.getRandomResource(this, { x: tile.pixelX, y: tile.pixelY });
+        scene.physics.add.existing(resource, true);
+        this.resources.add(resource);
+      });
+
+      // let tiles = resourceSpawnPoints.getTilesWithin(x, y, width, height, filteringOptions);
+      // do {
+      //   xPosition = Phaser.Math.Between(x, x + width);
+      //   yPosition = Phaser.Math.Between(y, y + height);
+
+      //   isFarEnough = this.resources.getChildren().every((resource: any) => {
+      //     const distance = Phaser.Math.Distance.Between(
+      //       xPosition,
+      //       yPosition,
+      //       resource.x,
+      //       resource.y,
+      //     );
+      //     return distance >= 16 * 5 && distance <= 16 * 20;
+      //   });
+      // } while (!isFarEnough);
+
+      // const resource = this.getRandomResource(this, { x: xPosition, y: yPosition });
+      // scene.physics.add.existing(resource, true);
+      // this.resources.add(resource);
+    });
   }
   getRandomResource(scene: Phaser.Scene, { x, y }) {
     return Phaser.Math.RND.pick([
-      () => new Resource(scene, { x, y, name: 'rock' }).setScale(0.7),
-      () => new Resource(scene, { x, y, name: 'tree' }).setScale(0.6),
+      () => new Resource(scene, { x, y, name: 'rock' }).setScale(0.6),
+      () => new Resource(scene, { x, y, name: 'tree' }).setScale(0.5),
     ])();
   }
+
   // createEnemy() {
   //   const phaseData = getPhaseData();
   //   let index = 0;
