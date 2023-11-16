@@ -59,12 +59,13 @@ export class InGameScene extends Phaser.Scene {
       .graphics({ fillStyle: { color: 0xff0000 } })
       .fillCircle(0, 0, 5)
       .setScale(20);
-    this.playerIndicator = this.add.container(player.x, player.y, graphics);
-
-    this.cameras.add(0, 0, 200, 200).setZoom(0.02).setOrigin(0, 0).ignore(player).setAlpha(0.7);
+    this.playerIndicator = this.add.container(this.player.x, this.player.y, graphics);
+    this.cameras.add(0, 0, 300, 300).setZoom(0.04).setOrigin(0, 0).ignore(player).setAlpha(0.7);
     player.on('moved', () => {
       this.playerIndicator.setPosition(player.x, player.y);
     });
+
+    const x = Number(this.game.config.width) - 50;
 
     this.rockState = new ResourceState(this, {
       x: Number(this.game.config.width) - 50,

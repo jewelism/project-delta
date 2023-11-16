@@ -35,12 +35,15 @@ io.on('connection', (socket) => {
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
+    minWidth: import.meta.env.MAIN_VITE_WINDOW_WIDTH,
+    minHeight: import.meta.env.MAIN_VITE_WINDOW_HEIGHT,
     width: import.meta.env.MAIN_VITE_WINDOW_WIDTH,
     height: import.meta.env.MAIN_VITE_WINDOW_HEIGHT,
-    show: false,
+    // show: false,
     autoHideMenuBar: true,
+    // useContentSize: true,
     // fullscreen: true,
-    // resizable: false,
+    resizable: false,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),

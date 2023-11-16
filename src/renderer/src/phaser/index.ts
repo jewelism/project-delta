@@ -12,8 +12,18 @@ const config: Phaser.Types.Core.GameConfig = {
   scale: {
     // mode: Phaser.Scale.FIT,
     mode: Phaser.Scale.ENVELOP,
-    width: Number(import.meta.env.RENDERER_VITE_WINDOW_WIDTH),
-    height: Number(import.meta.env.RENDERER_VITE_WINDOW_HEIGHT),
+    width: window.innerWidth,
+    height: window.innerHeight,
+    // width: Number(import.meta.env.RENDERER_VITE_WINDOW_WIDTH),
+    // height: Number(import.meta.env.RENDERER_VITE_WINDOW_HEIGHT),
+    min: {
+      width: 480 * 2,
+      height: 270 * 2,
+    },
+    max: {
+      width: 1920,
+      height: 1080,
+    },
   },
   physics: {
     default: 'arcade',
