@@ -28,7 +28,7 @@ export class ResourceState extends Phaser.GameObjects.Text {
     backgroundColor.setOrigin(0).setScrollFactor(0).setDepth(9998);
     scene.add.existing(backgroundColor);
 
-    this.setScrollFactor(0).setDepth(9999);
+    this.setScrollFactor(0).setDepth(9999).setName(texture);
     scene.add.existing(this);
   }
   increase(amount: number) {

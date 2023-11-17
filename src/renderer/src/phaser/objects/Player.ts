@@ -1,11 +1,12 @@
+import { Resource } from '@/phaser/objects/Resource';
 import { InGameScene } from '@/phaser/scenes/InGameScene';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   attackTimer: Phaser.Time.TimerEvent;
   attackRange: number = 200;
   attackSpeed: number = 1000;
-  damage: number;
-  moveSpeed: number = 1000;
+  damage: number = 1;
+  moveSpeed: number = 500;
   spriteKey: string;
 
   constructor(scene, { x, y, spriteKey }) {
@@ -61,17 +62,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene.input.keyboard.on('keydown-Q', () => {
       if (canPressQ) {
         const { resources } = this.scene as InGameScene;
-        const closest: any = this.scene.physics.closest(this, resources.getChildren());
+        const closest: Resource & any = this.scene.physics.closest(this, resources.getChildren());
 
         const { x: closestX, y: closestY } = closest.getCenter();
         const { x, y } = this.getCenter();
         const distance = Phaser.Math.Distance.Between(x, y, closestX, closestY);
-        console.log(distance, closest.width, closest.height);
 
         if (distance > 30) {
           return;
         }
         closest.setTint(0xff0000);
+        closest.decreaseHealth(this.damage);
+        (this.scene as InGameScene).resourceStates
+          .find(({ name }) => name === closest.name)
+          .increase(this.damage);
+
         this.scene.time.delayedCall(150, () => {
           closest.clearTint();
         });

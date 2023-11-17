@@ -9,9 +9,8 @@ export class InGameScene extends Phaser.Scene {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   player: Player;
   resources: Phaser.Physics.Arcade.Group;
-  rockState: ResourceState;
-  treeState: ResourceState;
   playerIndicator: Phaser.GameObjects.Container;
+  resourceStates: ResourceState[];
 
   constructor() {
     super('InGameScene');
@@ -59,26 +58,27 @@ export class InGameScene extends Phaser.Scene {
       .graphics({ fillStyle: { color: 0xff0000 } })
       .fillCircle(0, 0, 5)
       .setScale(20);
-    this.playerIndicator = this.add.container(this.player.x, this.player.y, graphics);
+    this.playerIndicator = this.add.container(player.x, player.y, graphics);
     this.cameras.add(0, 0, 300, 300).setZoom(0.04).setOrigin(0, 0).ignore(player).setAlpha(0.7);
     player.on('moved', () => {
       this.playerIndicator.setPosition(player.x, player.y);
     });
 
     const x = Number(this.game.config.width) - 50;
-
-    this.rockState = new ResourceState(this, {
-      x: Number(this.game.config.width) - 50,
-      y: 10,
-      initAmount: 0,
-      texture: 'rock',
-    });
-    this.treeState = new ResourceState(this, {
-      x: Number(this.game.config.width) - 50,
-      y: 35,
-      initAmount: 0,
-      texture: 'tree',
-    });
+    this.resourceStates = [
+      new ResourceState(this, {
+        x,
+        y: 10,
+        initAmount: 0,
+        texture: 'rock',
+      }),
+      new ResourceState(this, {
+        x,
+        y: 35,
+        initAmount: 0,
+        texture: 'tree',
+      }),
+    ];
   }
   createMap(scene: Phaser.Scene) {
     const map = scene.make.tilemap({

@@ -1,5 +1,5 @@
 export class Resource extends Phaser.Physics.Arcade.Image {
-  health: number = 100;
+  health: number = 3;
 
   constructor(scene, { x, y, name }) {
     super(scene, x, y, name);
@@ -14,5 +14,8 @@ export class Resource extends Phaser.Physics.Arcade.Image {
   }
   decreaseHealth(amount: number) {
     this.health -= amount;
+    if (this.health <= 0) {
+      this.destroy();
+    }
   }
 }
