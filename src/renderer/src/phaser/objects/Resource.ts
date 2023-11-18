@@ -9,13 +9,13 @@ export class Resource extends Phaser.Physics.Arcade.Image {
 
     this.setName(name).setOrigin(0, 0).setDepth(10).setCollideWorldBounds(true);
   }
-  increaseHealth(amount: number) {
-    this.health += amount;
-  }
   decreaseHealth(amount: number) {
+    const reward = this.health - amount < 0 ? this.health : amount;
+
     this.health -= amount;
     if (this.health <= 0) {
       this.destroy();
     }
+    return reward;
   }
 }

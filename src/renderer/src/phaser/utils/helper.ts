@@ -34,3 +34,32 @@ export const generateResource = ({
     });
   });
 };
+
+export const playMoveAnim = (char, spriteKey: string) => {
+  char.body.velocity.x < 0 && char.anims.play(`${spriteKey}-left`, true);
+  char.body.velocity.x > 0 && char.anims.play(`${spriteKey}-right`, true);
+  char.body.velocity.y < 0 && char.anims.play(`${spriteKey}-up`, true);
+  char.body.velocity.y > 0 && char.anims.play(`${spriteKey}-down`, true);
+};
+
+export const createMoveAnim = (char, spriteKey: string) => {
+  char.anims.create({
+    key: `${spriteKey}-idle`,
+    frames: [{ key: spriteKey, frame: 0 }],
+  });
+  [
+    { key: `${spriteKey}-down`, frames: Array.from({ length: 4 }, (_, i) => i) },
+    { key: `${spriteKey}-left`, frames: Array.from({ length: 4 }, (_, i) => i + 4) },
+    { key: `${spriteKey}-right`, frames: Array.from({ length: 4 }, (_, i) => i + 8) },
+    { key: `${spriteKey}-up`, frames: Array.from({ length: 4 }, (_, i) => i + 12) },
+  ].forEach(({ key, frames }) => {
+    char.anims.create({
+      key,
+      frames: char.anims.generateFrameNames(spriteKey, {
+        frames,
+      }),
+      frameRate: 24,
+    });
+  });
+  return char;
+};

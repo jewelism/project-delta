@@ -1,49 +1,35 @@
 import { Resource } from '@/phaser/objects/Resource';
 import { InGameScene } from '@/phaser/scenes/InGameScene';
+import { EaseText } from '@/phaser/ui/EaseText';
+import { createMoveAnim, playMoveAnim } from '@/phaser/utils/helper';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   attackTimer: Phaser.Time.TimerEvent;
   attackRange: number = 200;
   attackSpeed: number = 1000;
-  damage: number = 1;
-  moveSpeed: number = 500;
+  damage: number = 2;
+  moveSpeed: number = 100;
   spriteKey: string;
 
-  constructor(scene, { x, y, spriteKey }) {
+  constructor(scene: Phaser.Scene, { x, y, spriteKey }) {
     super(scene, x, y, spriteKey);
-    this.damage = 1;
 
     this.spriteKey = spriteKey;
-    this.anims.create({
-      key: `${spriteKey}-idle`,
-      frames: [{ key: spriteKey, frame: 0 }],
-    });
-    [
-      { key: `${spriteKey}-down`, frames: Array.from({ length: 4 }, (_, i) => i) },
-      { key: `${spriteKey}-left`, frames: Array.from({ length: 4 }, (_, i) => i + 4) },
-      { key: `${spriteKey}-right`, frames: Array.from({ length: 4 }, (_, i) => i + 8) },
-      { key: `${spriteKey}-up`, frames: Array.from({ length: 4 }, (_, i) => i + 12) },
-    ].forEach(({ key, frames }) => {
-      this.anims.create({
-        key,
-        frames: this.anims.generateFrameNames(spriteKey, {
-          frames,
-        }),
-        frameRate: 24,
-      });
-    });
-    scene.missiles = scene.add.group();
+
+    // this.missiles = scene.add.group();
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
     scene.physics.world.enableBody(this);
     this.setOrigin(0, 0).setBodySize(12, 18).setDepth(9).setCollideWorldBounds(true);
 
-    this.attackQ();
+    this.bindPressQ();
+    createMoveAnim(this, spriteKey);
     // scene.m_beamSound.play();
   }
 
   preUpdate() {
+    playMoveAnim(this, this.spriteKey);
     this.playerMoveWithKeyboard();
     // if (!this.attackTimer) {
     //   this.attackTimer = this.scene.time.delayedCall(
@@ -56,7 +42,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // }
   }
   attack() {}
-  attackQ() {
+  bindPressQ() {
     // GATHER resources
     let canPressQ = true;
     this.scene.input.keyboard.on('keydown-Q', () => {
@@ -72,7 +58,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
           return;
         }
         closest.setTint(0xff0000);
-        closest.decreaseHealth(this.damage);
+        const resourceReward = closest.decreaseHealth(this.damage);
+        new EaseText(this.scene, {
+          x: (closest as any).x,
+          y: (closest as any).y,
+          text: `+${resourceReward}`,
+          color: closest.name === 'rock' ? '#84b4c8' : '#619196',
+        });
         (this.scene as InGameScene).resourceStates
           .find(({ name }) => name === closest.name)
           .increase(this.damage);
@@ -87,6 +79,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         });
       }
     });
+    return this;
   }
   attackW() {}
   // get upgradeCost() {
@@ -125,39 +118,31 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
   playerMoveWithKeyboard() {
     this.emit('moved');
-    const { left, right, up, down } = (this.scene as any).cursors;
+    const { left, right, up, down } = (this.scene as InGameScene).cursors;
     if (left.isDown && up.isDown) {
       this.setVelocityX(-this.getMoveSpeed());
       this.setVelocityY(-this.getMoveSpeed());
-      this.anims.play(`${this.spriteKey}-left`, true);
     } else if (left.isDown && down.isDown) {
       this.setVelocityX(-this.getMoveSpeed());
       this.setVelocityY(this.getMoveSpeed());
-      this.anims.play(`${this.spriteKey}-left`, true);
     } else if (right.isDown && up.isDown) {
       this.setVelocityX(this.getMoveSpeed());
       this.setVelocityY(-this.getMoveSpeed());
-      this.anims.play(`${this.spriteKey}-right`, true);
     } else if (right.isDown && down.isDown) {
       this.setVelocityX(this.getMoveSpeed());
       this.setVelocityY(this.getMoveSpeed());
-      this.anims.play(`${this.spriteKey}-right`, true);
     } else if (left.isDown) {
       this.setVelocityX(-this.getMoveSpeed());
       this.setVelocityY(0);
-      this.anims.play(`${this.spriteKey}-left`, true);
     } else if (right.isDown) {
       this.setVelocityX(this.getMoveSpeed());
       this.setVelocityY(0);
-      this.anims.play(`${this.spriteKey}-right`, true);
     } else if (up.isDown) {
       this.setVelocityX(0);
       this.setVelocityY(-this.getMoveSpeed());
-      this.anims.play(`${this.spriteKey}-up`, true);
     } else if (down.isDown) {
       this.setVelocityX(0);
       this.setVelocityY(this.getMoveSpeed());
-      this.anims.play(`${this.spriteKey}-down`, true);
     } else {
       this.setVelocityX(0);
       this.setVelocityY(0);

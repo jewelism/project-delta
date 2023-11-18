@@ -1,3 +1,4 @@
+import { Enemy } from '@/phaser/objects/Enemy';
 import { Player } from '@/phaser/objects/Player';
 import { ResourceState } from '@/phaser/ui/ResourceState';
 import { generateResource } from '@/phaser/utils/helper';
@@ -30,6 +31,14 @@ export class InGameScene extends Phaser.Scene {
       frameWidth: 16,
       frameHeight: 32,
     });
+    this.load.spritesheet('skel', 'phaser/chars/Skel_walk_v2.png', {
+      frameWidth: 16,
+      frameHeight: 16,
+    });
+    this.load.spritesheet('goblin', 'phaser/chars/Goblin_walk_v2.png', {
+      frameWidth: 16,
+      frameHeight: 16,
+    });
   }
   create() {
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -45,6 +54,7 @@ export class InGameScene extends Phaser.Scene {
       y: playerSpawnPoints.y,
     });
     this.createUI(this.player);
+    new Enemy(this, { x: 200, y: 200, hp: 2, spriteKey: 'skel' });
 
     this.cameras.main
       .setBounds(0, 0, map.heightInPixels, map.widthInPixels)
@@ -53,9 +63,32 @@ export class InGameScene extends Phaser.Scene {
 
     this.physics.add.collider(this.resources, this.player);
   }
+  createMap(scene: Phaser.Scene) {
+    const map = scene.make.tilemap({
+      key: 'map',
+    });
+    const bgTiles = map.addTilesetImage('16tiles', '16tiles');
+    const bgLayer = map.createLayer('bg', bgTiles);
+    map.createLayer('bg_collision', bgTiles).setCollisionByExclusion([-1]);
+
+    map.createLayer('MonsterSpawn', bgTiles);
+    const playerSpawnPoints = map.findObject('PlayerSpawn', ({ name }) => {
+      return name.includes('PlayerSpawn');
+    });
+    const resourceSpawnPoints = map.filterObjects('ResourceSpawn', ({ name }) => {
+      return name.includes('ResourceSpawn');
+    });
+    const monsterSpawnPoints = map.filterObjects('MonsterSpawn', ({ name }) => {
+      return name.includes('MonsterSpawn');
+    });
+    generateResource({ scene, resourceSpawnPoints, bgLayer, resources: this.resources });
+    scene.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    return { map, playerSpawnPoints, monsterSpawnPoints };
+  }
   createUI(player: Player) {
     const graphics = this.add
-      .graphics({ fillStyle: { color: 0xff0000 } })
+      .graphics({ fillStyle: { color: 0x84b4c8 } })
       .fillCircle(0, 0, 5)
       .setScale(20);
     this.playerIndicator = this.add.container(player.x, player.y, graphics);
@@ -80,27 +113,6 @@ export class InGameScene extends Phaser.Scene {
       }),
     ];
   }
-  createMap(scene: Phaser.Scene) {
-    const map = scene.make.tilemap({
-      key: 'map',
-    });
-    const bgTiles = map.addTilesetImage('16tiles', '16tiles');
-    const bgLayer = map.createLayer('bg', bgTiles);
-    map.createLayer('bg_collision', bgTiles).setCollisionByExclusion([-1]);
-
-    map.createLayer('MonsterSpawn', bgTiles);
-    const playerSpawnPoints = map.findObject('PlayerSpawn', ({ name }) => {
-      return name.includes('PlayerSpawn');
-    });
-    const resourceSpawnPoints = map.filterObjects('ResourceSpawn', ({ name }) => {
-      return name.includes('ResourceSpawn');
-    });
-    generateResource({ scene, resourceSpawnPoints, bgLayer, resources: this.resources });
-    scene.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-
-    return { map, playerSpawnPoints };
-  }
-
   // createEnemy() {
   //   const phaseData = getPhaseData();
   //   let index = 0;

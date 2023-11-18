@@ -1,10 +1,11 @@
 export class EaseText extends Phaser.GameObjects.Text {
   constructor(
     scene: Phaser.Scene,
-    { x, y, text, color }: { x: number; y: number; text: string; color: string }
+    { x, y, text, color }: { x: number; y: number; text: string; color: string },
   ) {
     super(scene, x, y, text, {
-      fontSize: "14px",
+      fontSize: '14px',
+      fontStyle: 'bold',
       color,
     });
 
@@ -16,8 +17,8 @@ export class EaseText extends Phaser.GameObjects.Text {
       targets: this,
       y: this.y - 50,
       alpha: 0,
-      duration: 1500,
-      ease: "Power2",
+      duration: 2000,
+      ease: 'Power2',
       onComplete: () => {
         this.destroy();
       },
