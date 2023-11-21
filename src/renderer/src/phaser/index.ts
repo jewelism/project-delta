@@ -10,8 +10,8 @@ const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.WEBGL,
   // type: Phaser.CANVAS,
   scale: {
-    // mode: Phaser.Scale.FIT,
-    mode: Phaser.Scale.ENVELOP,
+    mode: Phaser.Scale.FIT,
+    // mode: Phaser.Scale.CENTER_HORIZONTALLY,
     width: window.innerWidth,
     height: window.innerHeight,
     // width: Number(import.meta.env.RENDERER_VITE_WINDOW_WIDTH),

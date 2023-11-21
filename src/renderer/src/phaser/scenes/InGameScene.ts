@@ -92,22 +92,31 @@ export class InGameScene extends Phaser.Scene {
       .fillCircle(0, 0, 5)
       .setScale(20);
     this.playerIndicator = this.add.container(player.x, player.y, graphics);
-    this.cameras.add(0, 0, 300, 300).setZoom(0.04).setOrigin(0, 0).ignore(player).setAlpha(0.7);
+    const minimapSize = 300;
+    const y = Number(this.game.config.height) - minimapSize;
+
+    this.cameras
+      .add(0, y, minimapSize, minimapSize)
+      .setZoom(0.05)
+      .setOrigin(0, 0.5)
+      .ignore(player)
+      .setAlpha(0.7);
     player.on('moved', () => {
       this.playerIndicator.setPosition(player.x, player.y);
     });
 
     const x = Number(this.game.config.width) - 50;
+
     this.resourceStates = [
       new ResourceState(this, {
         x,
-        y: 10,
+        y: 35,
         initAmount: 0,
         texture: 'rock',
       }),
       new ResourceState(this, {
         x,
-        y: 35,
+        y: 60,
         initAmount: 0,
         texture: 'tree',
       }),
