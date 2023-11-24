@@ -8,7 +8,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   attackRange: number = 200;
   attackSpeed: number = 1000;
   damage: number = 2;
-  moveSpeed: number = 100;
+  moveSpeed: number = 500;
   spriteKey: string;
 
   constructor(scene: Phaser.Scene, { x, y, spriteKey }) {

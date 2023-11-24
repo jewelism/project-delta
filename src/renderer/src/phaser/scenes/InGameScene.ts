@@ -3,6 +3,9 @@ import { Player } from '@/phaser/objects/Player';
 import { ResourceState } from '@/phaser/ui/ResourceState';
 import { generateResource } from '@/phaser/utils/helper';
 
+const GAME = {
+  ZOOM: 2,
+};
 export class InGameScene extends Phaser.Scene {
   enemies: Phaser.Physics.Arcade.Group;
   timer: Phaser.Time.TimerEvent;
@@ -53,13 +56,16 @@ export class InGameScene extends Phaser.Scene {
       x: playerSpawnPoints.x,
       y: playerSpawnPoints.y,
     });
-    this.createUI(this.player);
+    this.scene.launch('InGameUIScene');
+
+    this.createMinimap(this.player);
     new Enemy(this, { x: 200, y: 200, hp: 2, spriteKey: 'skel' });
 
     this.cameras.main
       .setBounds(0, 0, map.heightInPixels, map.widthInPixels)
       .startFollow(this.player, false)
-      .ignore(this.playerIndicator);
+      .ignore(this.playerIndicator)
+      .setZoom(GAME.ZOOM);
 
     this.physics.add.collider(this.resources, this.player);
   }
@@ -86,7 +92,7 @@ export class InGameScene extends Phaser.Scene {
 
     return { map, playerSpawnPoints, monsterSpawnPoints };
   }
-  createUI(player: Player) {
+  createMinimap(player: Player) {
     const graphics = this.add
       .graphics({ fillStyle: { color: 0x84b4c8 } })
       .fillCircle(0, 0, 5)
@@ -104,23 +110,6 @@ export class InGameScene extends Phaser.Scene {
     player.on('moved', () => {
       this.playerIndicator.setPosition(player.x, player.y);
     });
-
-    const x = Number(this.game.config.width) - 50;
-
-    this.resourceStates = [
-      new ResourceState(this, {
-        x,
-        y: 35,
-        initAmount: 0,
-        texture: 'rock',
-      }),
-      new ResourceState(this, {
-        x,
-        y: 60,
-        initAmount: 0,
-        texture: 'tree',
-      }),
-    ];
   }
   // createEnemy() {
   //   const phaseData = getPhaseData();

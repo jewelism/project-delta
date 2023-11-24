@@ -14,7 +14,7 @@ export class ResourceState extends Phaser.GameObjects.Text {
       .image(x - 25, y - 3, texture)
       .setDisplaySize(20, 20)
       .setOrigin(0)
-      .setScrollFactor(0)
+      .setScrollFactor(0.1)
       .setDepth(9999);
 
     const backgroundColor = new Phaser.GameObjects.Rectangle(
