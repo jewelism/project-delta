@@ -1,5 +1,5 @@
 import { InGameScene } from '@/phaser/scenes/InGameScene';
-import { Button } from '@/phaser/ui/UpgradeButton';
+import { UpgradeButton } from '@/phaser/ui/UpgradeButton';
 import { ResourceState } from '@/phaser/ui/ResourceState';
 
 export class InGameUIScene extends Phaser.Scene {
@@ -51,42 +51,43 @@ export class InGameUIScene extends Phaser.Scene {
         texture: 'tree',
       }),
     ];
-    // this.scene.get('InGameScene').data.set('resourceStates', [
-    //   new ResourceState(this, {
-    //     x,
-    //     y: 35,
-    //     initAmount: 0,
-    //     texture: 'rock',
-    //   }),
-    //   new ResourceState(this, {
-    //     x,
-    //     y: 60,
-    //     initAmount: 0,
-    //     texture: 'tree',
-    //   }),
-    // ]);
+    this.createOpenUpgradeUIButton(this);
     this.createUpgradeUI(this);
   }
+  createOpenUpgradeUIButton(scene: Phaser.Scene) {
+    const button = new UpgradeButton(scene, {
+      x: Number(scene.game.config.width) - 50,
+      y: Number(scene.game.config.height) - 50,
+      width: 50,
+      height: 50,
+      spriteKey: 'book1',
+      desc: '',
+      onClick: () => {
+        this.upgradeUI.setVisible(!this.upgradeUI.visible);
+      },
+    }).setDepth(9999);
+    scene.add.existing(button);
+  }
   createUpgradeUI(scene: Phaser.Scene) {
-    this.upgradeUI = scene.add.container(0, 0);
+    this.upgradeUI = scene.add.container(0, 0).setVisible(false);
     const uiWrap = scene.add
       .rectangle(0, 0, Number(scene.game.config.width), Number(scene.game.config.height))
       .setOrigin(0, 0)
       .setScrollFactor(0)
-      .setFillStyle(0x000000, 0.5);
+      .setFillStyle(0x000000, 0.7);
     // const button = new SelectLevelButton(scene, 100, 100, 1);
     const buttons = [
-      { id: 'spell', spriteKey: 'book1', desc: 'spell attack +1' },
-      { id: 'moveSpeed', spriteKey: 'boots', desc: 'move speed +1%' },
-      { id: 'attackSpeed', spriteKey: 'fist', desc: 'attack speed +2%' },
-      { id: 'defence', spriteKey: 'defence1', desc: 'defence +1' },
+      // { id: 'spell', spriteKey: 'book1', desc: 'spell attack +1' },
       {
         id: 'attackDamage',
         spriteKey: 'sword1',
         desc: 'attack damage +1',
       },
+      { id: 'attackSpeed', spriteKey: 'fist', desc: 'attack speed +2%' },
+      { id: 'moveSpeed', spriteKey: 'boots', desc: 'move speed +1%' },
+      { id: 'defence', spriteKey: 'defence1', desc: 'defence +1' },
     ].map(({ id, spriteKey, desc }, index) => {
-      const button = new Button(scene, {
+      const button = new UpgradeButton(scene, {
         x: 50,
         y: 50 * (index + 1),
         width: 50,

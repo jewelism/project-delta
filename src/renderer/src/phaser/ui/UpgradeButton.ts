@@ -1,4 +1,12 @@
-export class Button extends Phaser.GameObjects.Container {
+const TEXT_STYLE = {
+  fontSize: 14,
+  fontStyle: 'bold',
+  color: '#000000',
+  stroke: '#ffffff', // 테두리 색상
+  strokeThickness: 2, // 테두리 두께
+};
+
+export class UpgradeButton extends Phaser.GameObjects.Container {
   constructor(scene: Phaser.Scene, { x, y, width, height, spriteKey, desc, onClick }) {
     super(scene, x, y);
 
@@ -26,22 +34,26 @@ export class Button extends Phaser.GameObjects.Container {
       button.height / 2,
       spriteKey,
     );
+    const rockIcon = new Phaser.GameObjects.Sprite(scene, 10, 3, 'rock').setScale(0.5);
+    const rockText = new Phaser.GameObjects.Text(scene, 20, -5, '1', TEXT_STYLE);
+    const treeIcon = new Phaser.GameObjects.Sprite(scene, 50, 3, 'tree').setScale(0.35);
+    const treeText = new Phaser.GameObjects.Text(scene, 60, -5, '1', TEXT_STYLE);
 
+    const upgradeResource = new Phaser.GameObjects.Container(
+      scene,
+      button.width + 10,
+      button.height / 2 - 15,
+      [rockIcon, rockText, treeIcon, treeText],
+    );
     const upgradeButton = new Phaser.GameObjects.Container(scene, 0, 0, [button, icon]);
     const descText = new Phaser.GameObjects.Text(
       scene,
       button.width + 10,
       button.height / 2,
       desc,
-      {
-        fontSize: 14,
-        fontStyle: 'bold',
-        color: '#000000',
-        stroke: '#ffffff', // 테두리 색상
-        strokeThickness: 2, // 테두리 두께
-      },
+      TEXT_STYLE,
     );
-    this.add([descText, upgradeButton]);
+    this.add([upgradeResource, descText, upgradeButton]);
     scene.add.existing(this);
   }
 }
