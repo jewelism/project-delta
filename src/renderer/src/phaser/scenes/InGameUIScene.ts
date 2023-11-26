@@ -1,12 +1,39 @@
 import { InGameScene } from '@/phaser/scenes/InGameScene';
-import { Button } from '@/phaser/ui/Button';
+import { Button } from '@/phaser/ui/UpgradeButton';
 import { ResourceState } from '@/phaser/ui/ResourceState';
 
 export class InGameUIScene extends Phaser.Scene {
+  upgradeUI: Phaser.GameObjects.Container;
   constructor() {
     super('InGameUIScene');
   }
-
+  preload() {
+    this.load.spritesheet('sword1', 'phaser/ui/upgrade_icon32x32.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+      startFrame: 0,
+    });
+    this.load.spritesheet('defence1', 'phaser/ui/upgrade_icon32x32.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+      startFrame: 3,
+    });
+    this.load.spritesheet('book1', 'phaser/ui/upgrade_icon32x32.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+      startFrame: 6,
+    });
+    this.load.spritesheet('boots', 'phaser/ui/upgrade_icon32x32.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+      startFrame: 8,
+    });
+    this.load.spritesheet('fist', 'phaser/ui/upgrade_icon32x32.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+      startFrame: 9,
+    });
+  }
   create() {
     const x = Number(this.game.config.width) - 50;
     const inGameScene = this.scene.get('InGameScene') as InGameScene;
@@ -38,45 +65,40 @@ export class InGameUIScene extends Phaser.Scene {
     //     texture: 'tree',
     //   }),
     // ]);
-    this.createUI(this);
+    this.createUpgradeUI(this);
   }
-  createUI(scene: Phaser.Scene, UI = { height: 50 }) {
-    const uiContainer = scene.add.container(0, Number(scene.game.config.height) - UI.height);
+  createUpgradeUI(scene: Phaser.Scene) {
+    this.upgradeUI = scene.add.container(0, 0);
     const uiWrap = scene.add
-      .rectangle(
-        0,
-        0,
-        // Number(scene.game.config.height) - height,
-        Number(scene.game.config.width),
-        UI.height,
-      )
+      .rectangle(0, 0, Number(scene.game.config.width), Number(scene.game.config.height))
       .setOrigin(0, 0)
-      .setScrollFactor(0);
+      .setScrollFactor(0)
+      .setFillStyle(0x000000, 0.5);
     // const button = new SelectLevelButton(scene, 100, 100, 1);
     const buttons = [
-      { id: 'income', spriteKey: 'book1', desc: 'increase income +0.5%' },
-      { id: 'addSoldier', spriteKey: '', desc: 'add new random attacker +1' },
-      { id: 'attackSpeed', spriteKey: '', desc: 'increase attack speed 1%' },
+      { id: 'spell', spriteKey: 'book1', desc: 'spell attack +1' },
+      { id: 'moveSpeed', spriteKey: 'boots', desc: 'move speed +1%' },
+      { id: 'attackSpeed', spriteKey: 'fist', desc: 'attack speed +2%' },
+      { id: 'defence', spriteKey: 'defence1', desc: 'defence +1' },
       {
         id: 'attackDamage',
         spriteKey: 'sword1',
-        desc: 'increase attack damage 1%',
+        desc: 'attack damage +1',
       },
-      { id: 'upgradeBunker', spriteKey: 'defence1', desc: 'upgrade bunker' },
     ].map(({ id, spriteKey, desc }, index) => {
       const button = new Button(scene, {
-        x: Number(scene.game.config.width) - 50 * (index + 1),
-        y: 0,
+        x: 50,
+        y: 50 * (index + 1),
         width: 50,
         height: 50,
         spriteKey,
-        hoverText: desc,
+        desc,
         onClick: () => {
           this.events.emit('upgrade', id);
         },
       });
       return button;
     });
-    uiContainer.add([uiWrap, ...buttons]).setDepth(9997);
+    this.upgradeUI.add([uiWrap, ...buttons]).setDepth(9997);
   }
 }

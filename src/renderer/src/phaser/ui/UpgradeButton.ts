@@ -1,14 +1,12 @@
 export class Button extends Phaser.GameObjects.Container {
-  constructor(scene: Phaser.Scene, { x, y, width, height, spriteKey, hoverText, onClick }) {
+  constructor(scene: Phaser.Scene, { x, y, width, height, spriteKey, desc, onClick }) {
     super(scene, x, y);
-    // const tooltip = new ToolTip(scene, { x, y, hoverText });
 
     const button = new Phaser.GameObjects.Rectangle(scene, 0, 0, width, height)
       .setStrokeStyle(2, 0x0000ff, 1)
       .setOrigin(0, 0)
       .setInteractive()
       .on('pointerdown', () => {
-        // tooltip.setVisible(true);
         button.setAlpha(0.4);
         icon.setAlpha(0.4);
         onClick();
@@ -17,13 +15,10 @@ export class Button extends Phaser.GameObjects.Container {
         button.setAlpha(1);
         icon.setAlpha(1);
       })
-      .on('pointerover', () => {
-        // tooltip.setVisible(true);
-      })
+      .on('pointerover', () => {})
       .on('pointerout', () => {
         button.setAlpha(1);
         icon.setAlpha(1);
-        // tooltip.setVisible(false);
       });
     const icon = new Phaser.GameObjects.Sprite(
       scene,
@@ -32,7 +27,21 @@ export class Button extends Phaser.GameObjects.Container {
       spriteKey,
     );
 
-    this.add([button, icon]);
+    const upgradeButton = new Phaser.GameObjects.Container(scene, 0, 0, [button, icon]);
+    const descText = new Phaser.GameObjects.Text(
+      scene,
+      button.width + 10,
+      button.height / 2,
+      desc,
+      {
+        fontSize: 14,
+        fontStyle: 'bold',
+        color: '#000000',
+        stroke: '#ffffff', // 테두리 색상
+        strokeThickness: 2, // 테두리 두께
+      },
+    );
+    this.add([descText, upgradeButton]);
     scene.add.existing(this);
   }
 }
