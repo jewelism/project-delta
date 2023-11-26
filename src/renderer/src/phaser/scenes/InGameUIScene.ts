@@ -1,6 +1,7 @@
 import { InGameScene } from '@/phaser/scenes/InGameScene';
 import { UpgradeButton } from '@/phaser/ui/UpgradeButton';
 import { ResourceState } from '@/phaser/ui/ResourceState';
+import { IconButton } from '@/phaser/ui/IconButton';
 
 export class InGameUIScene extends Phaser.Scene {
   upgradeUI: Phaser.GameObjects.Container;
@@ -55,18 +56,16 @@ export class InGameUIScene extends Phaser.Scene {
     this.createUpgradeUI(this);
   }
   createOpenUpgradeUIButton(scene: Phaser.Scene) {
-    const button = new UpgradeButton(scene, {
+    new IconButton(scene, {
       x: Number(scene.game.config.width) - 50,
       y: Number(scene.game.config.height) - 50,
       width: 50,
       height: 50,
       spriteKey: 'book1',
-      desc: '',
       onClick: () => {
         this.upgradeUI.setVisible(!this.upgradeUI.visible);
       },
     }).setDepth(9999);
-    scene.add.existing(button);
   }
   createUpgradeUI(scene: Phaser.Scene) {
     this.upgradeUI = scene.add.container(0, 0).setVisible(false);
