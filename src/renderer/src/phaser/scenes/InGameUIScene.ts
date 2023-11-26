@@ -56,15 +56,17 @@ export class InGameUIScene extends Phaser.Scene {
     this.createUpgradeUI(this);
   }
   createOpenUpgradeUIButton(scene: Phaser.Scene) {
+    const onClick = () => {
+      this.upgradeUI.setVisible(!this.upgradeUI.visible);
+    };
     new IconButton(scene, {
-      x: Number(scene.game.config.width) - 50,
-      y: Number(scene.game.config.height) - 50,
+      x: Number(scene.game.config.width) - 100,
+      y: Number(scene.game.config.height) - 100,
       width: 50,
       height: 50,
       spriteKey: 'book1',
-      onClick: () => {
-        this.upgradeUI.setVisible(!this.upgradeUI.visible);
-      },
+      shortcutText: 'B',
+      onClick,
     }).setDepth(9999);
   }
   createUpgradeUI(scene: Phaser.Scene) {
@@ -80,18 +82,20 @@ export class InGameUIScene extends Phaser.Scene {
       {
         id: 'attackDamage',
         spriteKey: 'sword1',
+        shortcutText: 'A',
         desc: 'attack damage +1',
       },
-      { id: 'attackSpeed', spriteKey: 'fist', desc: 'attack speed +2%' },
-      { id: 'moveSpeed', spriteKey: 'boots', desc: 'move speed +1%' },
-      { id: 'defence', spriteKey: 'defence1', desc: 'defence +1' },
-    ].map(({ id, spriteKey, desc }, index) => {
+      { id: 'attackSpeed', spriteKey: 'fist', shortcutText: 'S', desc: 'attack speed +2%' },
+      { id: 'defence', spriteKey: 'defence1', shortcutText: 'D', desc: 'defence +1' },
+      { id: 'moveSpeed', spriteKey: 'boots', shortcutText: 'F', desc: 'move speed +1%' },
+    ].map(({ id, spriteKey, shortcutText, desc }, index) => {
       const button = new UpgradeButton(scene, {
         x: 50,
         y: 50 * (index + 1),
         width: 50,
         height: 50,
         spriteKey,
+        shortcutText,
         desc,
         onClick: () => {
           this.events.emit('upgrade', id);

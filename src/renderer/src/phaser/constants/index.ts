@@ -5,3 +5,10 @@ export const getUIStyle = () => {
     align: 'left',
   };
 };
+export const UPGRADE_TEXT_STYLE = {
+  fontSize: 14,
+  fontStyle: 'bold',
+  color: '#000000',
+  stroke: '#ffffff',
+  strokeThickness: 2, // 테두리 두께
+};

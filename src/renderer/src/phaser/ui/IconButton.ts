@@ -1,35 +1,49 @@
+import { UPGRADE_TEXT_STYLE } from '@/phaser/constants';
+
 export class IconButton extends Phaser.GameObjects.Container {
-  constructor(scene: Phaser.Scene, { x, y, width, height, spriteKey, onClick }) {
+  constructor(scene: Phaser.Scene, { x, y, width, height, shortcutText, spriteKey, onClick }) {
     super(scene, x, y);
 
+    const onKeyDown = () => {
+      button.setAlpha(0.4);
+      icon.setAlpha(0.4);
+      onClick();
+    };
+    const onKeyUp = () => {
+      button.setAlpha(1);
+      icon.setAlpha(1);
+    };
     const button = new Phaser.GameObjects.Rectangle(scene, 0, 0, width, height)
       .setStrokeStyle(2, 0x0000ff, 1)
       .setOrigin(0, 0)
       .setInteractive()
       .on('pointerdown', () => {
-        button.setAlpha(0.4);
-        icon.setAlpha(0.4);
-        onClick();
+        onKeyDown();
       })
-      .on('pointerup', () => {
-        button.setAlpha(1);
-        icon.setAlpha(1);
-      })
-      .on('pointerover', () => {})
-      .on('pointerout', () => {
-        button.setAlpha(1);
-        icon.setAlpha(1);
-      });
+      .on('pointerup', onKeyUp)
+      .on('pointerout', onKeyUp);
     const icon = new Phaser.GameObjects.Sprite(
       scene,
       button.width / 2,
       button.height / 2,
       spriteKey,
     );
+    const shortcut = new Phaser.GameObjects.Text(
+      scene,
+      button.width - 10,
+      10,
+      shortcutText,
+      UPGRADE_TEXT_STYLE,
+    ).setOrigin(0.5, 0.5);
 
-    const buttonContainer = new Phaser.GameObjects.Container(scene, 0, 0, [button, icon]);
+    const buttonContainer = new Phaser.GameObjects.Container(scene, 0, 0, [button, icon, shortcut]);
 
     this.add(buttonContainer);
     scene.add.existing(this);
+
+    scene.input.keyboard
+      .addKey(Phaser.Input.Keyboard.KeyCodes[shortcutText])
+      .on('down', onKeyDown)
+      .on('up', onKeyUp);
   }
 }
