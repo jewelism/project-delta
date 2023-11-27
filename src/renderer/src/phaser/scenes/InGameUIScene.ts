@@ -5,6 +5,7 @@ import { IconButton } from '@/phaser/ui/IconButton';
 
 export class InGameUIScene extends Phaser.Scene {
   upgradeUI: Phaser.GameObjects.Container;
+
   constructor() {
     super('InGameUIScene');
   }

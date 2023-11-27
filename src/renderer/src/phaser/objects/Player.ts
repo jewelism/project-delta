@@ -8,7 +8,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   attackRange: number = 200;
   attackSpeed: number = 1000;
   damage: number = 2;
-  moveSpeed: number = 500;
+  moveSpeed: number = 100;
   spriteKey: string;
 
   constructor(scene: Phaser.Scene, { x, y, spriteKey }) {
@@ -119,33 +119,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   playerMoveWithKeyboard() {
     this.emit('moved');
     const { left, right, up, down } = (this.scene as InGameScene).cursors;
-    if (left.isDown && up.isDown) {
-      this.setVelocityX(-this.getMoveSpeed());
-      this.setVelocityY(-this.getMoveSpeed());
-    } else if (left.isDown && down.isDown) {
-      this.setVelocityX(-this.getMoveSpeed());
-      this.setVelocityY(this.getMoveSpeed());
-    } else if (right.isDown && up.isDown) {
-      this.setVelocityX(this.getMoveSpeed());
-      this.setVelocityY(-this.getMoveSpeed());
-    } else if (right.isDown && down.isDown) {
-      this.setVelocityX(this.getMoveSpeed());
-      this.setVelocityY(this.getMoveSpeed());
-    } else if (left.isDown) {
-      this.setVelocityX(-this.getMoveSpeed());
-      this.setVelocityY(0);
-    } else if (right.isDown) {
-      this.setVelocityX(this.getMoveSpeed());
-      this.setVelocityY(0);
-    } else if (up.isDown) {
-      this.setVelocityX(0);
-      this.setVelocityY(-this.getMoveSpeed());
-    } else if (down.isDown) {
-      this.setVelocityX(0);
-      this.setVelocityY(this.getMoveSpeed());
-    } else {
-      this.setVelocityX(0);
-      this.setVelocityY(0);
-    }
+    const speed = this.getMoveSpeed();
+
+    const xSpeed = left.isDown ? -speed : right.isDown ? speed : 0;
+    const ySpeed = up.isDown ? -speed : down.isDown ? speed : 0;
+
+    this.setVelocityX(xSpeed);
+    this.setVelocityY(ySpeed);
   }
 }
