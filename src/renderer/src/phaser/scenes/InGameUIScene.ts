@@ -10,6 +10,7 @@ export class InGameUIScene extends Phaser.Scene {
     super('InGameUIScene');
   }
   preload() {
+    this.load.html('upgrade', 'phaser/upgrade.html');
     this.load.spritesheet('sword1', 'phaser/ui/upgrade_icon32x32.png', {
       frameWidth: 32,
       frameHeight: 32,
@@ -72,38 +73,69 @@ export class InGameUIScene extends Phaser.Scene {
   }
   createUpgradeUI(scene: Phaser.Scene) {
     this.upgradeUI = scene.add.container(0, 0).setVisible(false);
+    const element = new Phaser.GameObjects.DOMElement(scene, 50, 50)
+      .setOrigin(0, 0)
+      .createFromCache('upgrade')
+      .addListener('click');
+    element.getChildByID('attackDamage').addEventListener('click', (e) => {
+      console.log('d', e.target);
+    });
+
+    element.on('click', ({ target }) => {
+      console.log('click', target);
+
+      // if (name === 'singleplayButton') {
+      //   this.scene.start('InGameScene');
+      // }
+      // if (name === 'createMulti') {
+      //   this.scene.start('MultiplayLobbyScene');
+      // }
+      // if (name === 'joinMulti') {
+      //   this.scene.start('MultiplayLobbyScene');
+      // }
+    });
     const uiWrap = scene.add
       .rectangle(0, 0, Number(scene.game.config.width), Number(scene.game.config.height))
       .setOrigin(0, 0)
       .setScrollFactor(0)
       .setFillStyle(0x000000, 0.7);
     // const button = new SelectLevelButton(scene, 100, 100, 1);
-    const buttons = [
-      // { id: 'spell', spriteKey: 'book1', desc: 'spell attack +1' },
-      {
-        id: 'attackDamage',
-        spriteKey: 'sword1',
-        shortcutText: 'A',
-        desc: 'attack damage +1',
-      },
-      { id: 'attackSpeed', spriteKey: 'fist', shortcutText: 'S', desc: 'attack speed +2%' },
-      { id: 'defence', spriteKey: 'defence1', shortcutText: 'D', desc: 'defence +1' },
-      { id: 'moveSpeed', spriteKey: 'boots', shortcutText: 'F', desc: 'move speed +1%' },
-    ].map(({ id, spriteKey, shortcutText, desc }, index) => {
-      const button = new UpgradeButton(scene, {
-        x: 50,
-        y: 50 * (index + 1),
-        width: 50,
-        height: 50,
-        spriteKey,
-        shortcutText,
-        desc,
-        onClick: () => {
-          this.events.emit('upgrade', id);
-        },
-      });
-      return button;
-    });
-    this.upgradeUI.add([uiWrap, ...buttons]).setDepth(9997);
+    // const buttons = [
+    //   // { id: 'spell', spriteKey: 'book1', desc: 'spell attack +1' },
+    //   {
+    //     id: 'attackDamage',
+    //     spriteKey: 'sword1',
+    //     shortcutText: 'A',
+    //     desc: 'attack damage +1',
+    //     max: 100,
+    //   },
+    //   {
+    //     id: 'attackSpeed',
+    //     spriteKey: 'fist',
+    //     shortcutText: 'S',
+    //     desc: 'attack speed +1%',
+    //     max: 100,
+    //   },
+    //   { id: 'defence', spriteKey: 'defence1', shortcutText: 'D', desc: 'defence +1', max: 100 },
+    //   { id: 'moveSpeed', spriteKey: 'boots', shortcutText: 'F', desc: 'move speed +1%', max: 100 },
+    // ].map(({ id, spriteKey, shortcutText, desc, max }, index) => {
+    //   const button = new UpgradeButton(scene, {
+    //     x: 50,
+    //     y: 50 * (index + 1),
+    //     width: 50,
+    //     height: 50,
+    //     spriteKey,
+    //     shortcutText,
+    //     desc,
+    //     max,
+    //     onClick: () => {
+    //       const inGameScene = this.scene.get('InGameScene') as InGameScene;
+    //       inGameScene.events.emit('upgrade', id);
+    //       console.log('dd', this, button);
+    //     },
+    //   });
+    //   return button;
+    // });
+    this.upgradeUI.add([uiWrap, element]).setDepth(9997);
   }
 }

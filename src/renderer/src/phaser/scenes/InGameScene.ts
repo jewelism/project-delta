@@ -68,6 +68,10 @@ export class InGameScene extends Phaser.Scene {
       .setZoom(GAME.ZOOM);
 
     this.physics.add.collider(this.resources, this.player);
+
+    this.events.on('upgrade', (upgradeId: string) => {
+      console.log('upgradeId', upgradeId);
+    });
   }
   createMap(scene: Phaser.Scene) {
     const map = scene.make.tilemap({
