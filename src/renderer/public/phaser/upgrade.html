@@ -5,7 +5,10 @@
     font-size: 20px;
     background-color: #fff;
     padding: 5px 10px;
-    width: 280px;
+    width: 330px;
+  }
+  .keydown {
+    background-color: #ccc;
   }
   .upgrade-icon-wrap {
     width: 32px;
@@ -29,30 +32,18 @@
     right: 2px;
     font-size: 12px;
   }
-  .upgrade-icon-sword1 {
+  .sword1 {
     background-position: 0 0;
   }
-  .upgrade-icon-fist {
+  .fist {
     background-position: 0 -96px;
   }
 </style>
-<button type="button" id="attackDamage">
+<button type="button" id="button">
   <div class="upgrade-icon-wrap">
-    <div class="upgrade-icon upgrade-icon-sword1"></div>
-    <span>A</span>
+    <div id="upgrade-icon" class="upgrade-icon"></div>
+    <span id="shortcutText"></span>
   </div>
-  <div>
-    (<span id="attackDamageCurrent">1</span> / <span id="attackDamageMax">5</span>) +attack damage
-  </div>
-</button>
-<br />
-<button type="button" id="attackSpeed">
-  <div class="upgrade-icon-wrap">
-    <div class="upgrade-icon upgrade-icon-fist"></div>
-    <span>S</span>
-  </div>
-  <div>
-    (<span id="attackSpeedCurrent">1</span> / <span id="attackSpeedMax">5</span>) +attack speed
-  </div>
+  <div>(<span id="current">1</span> / <span id="max">5</span>) <span id="desc"></span></div>
 </button>
 <br />
