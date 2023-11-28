@@ -7,7 +7,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   attackTimer: Phaser.Time.TimerEvent;
   attackRange: number = 200;
   attackSpeed: number = 1000;
-  damage: number = 2;
+  attackDamage: number = 2;
   moveSpeed: number = 100;
   spriteKey: string;
 
@@ -58,16 +58,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
           return;
         }
         closest.setTint(0xff0000);
-        const resourceReward = closest.decreaseHealth(this.damage);
+        const resourceReward = closest.decreaseHealth(this.attackDamage);
         new EaseText(this.scene, {
           x: (closest as any).x,
           y: (closest as any).y,
           text: `+${resourceReward}`,
           color: closest.name === 'rock' ? '#84b4c8' : '#619196',
         });
-        (this.scene as InGameScene).resourceStates
-          .find(({ name }) => name === closest.name)
-          .increase(this.damage);
+        (this.scene as InGameScene).resourceStates[closest.name].increase(this.attackDamage);
 
         this.scene.time.delayedCall(150, () => {
           closest.clearTint();
@@ -126,5 +124,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.setVelocityX(xSpeed);
     this.setVelocityY(ySpeed);
+  }
+  getAttackDamageUpgradeCost() {
+    if (this.attackDamage >= 3) {
+      return { rock: this.attackDamage * 20, tree: this.attackDamage * 20, gold: 1 };
+    }
+    return { rock: this.attackDamage * 5, tree: this.attackDamage * 5 };
   }
 }

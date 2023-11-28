@@ -40,20 +40,24 @@ export class InGameUIScene extends Phaser.Scene {
   create() {
     const x = Number(this.game.config.width) - 50;
     const inGameScene = this.scene.get('InGameScene') as InGameScene;
-    inGameScene.resourceStates = [
-      new ResourceState(this, {
+    inGameScene.resourceStates = {
+      rock: new ResourceState(this, {
         x,
         y: 35,
-        initAmount: 0,
         texture: 'rock',
       }),
-      new ResourceState(this, {
+      tree: new ResourceState(this, {
         x,
         y: 60,
-        initAmount: 0,
         texture: 'tree',
       }),
-    ];
+      gold: new ResourceState(this, {
+        x,
+        y: 85,
+        texture: 'goldBar',
+      }),
+    };
+
     this.createOpenUpgradeUIButton(this);
     this.createUpgradeUI(this);
   }
@@ -67,15 +71,14 @@ export class InGameUIScene extends Phaser.Scene {
       width: 50,
       height: 50,
       spriteKey: 'book1',
-      shortcutText: 'B',
+      shortcutText: 'C',
       onClick,
     }).setDepth(9999);
   }
   createUpgradeUI(scene: Phaser.Scene) {
     this.upgradeUI = scene.add.container(0, 0).setVisible(false);
 
-    this.buttonElements = [
-      // { id: 'spell', spriteKey: 'book1', desc: 'spell attack +1' },
+    const buttonElements = [
       {
         id: 'attackDamage',
         spriteKey: 'sword1',
@@ -123,6 +126,30 @@ export class InGameUIScene extends Phaser.Scene {
       .setScrollFactor(0)
       .setFillStyle(0x000000, 0.7);
 
-    this.upgradeUI.add([uiWrap, ...this.buttonElements]).setDepth(9997);
+    this.upgradeUI.add([uiWrap, ...buttonElements]).setDepth(9997);
+  }
+  canUpgrade() {
+    const inGameScene = this.scene.get('InGameScene') as InGameScene;
+    const { tree, rock, gold } = inGameScene.player.getAttackDamageUpgradeCost();
+    const { tree: treeState, rock: rockState, gold: goldState } = inGameScene.resourceStates;
+    return {
+      canUpgrade:
+        treeState.resourceAmount >= tree &&
+        rockState.resourceAmount >= rock &&
+        goldState.resourceAmount >= gold,
+      cost: { tree, rock, gold },
+    };
+  }
+  attackDamageUpgrade() {
+    const inGameScene = this.scene.get('InGameScene') as InGameScene;
+    const { canUpgrade, cost } = this.canUpgrade();
+    if (!canUpgrade) {
+      return;
+    }
+    const { tree, rock, gold } = cost;
+    inGameScene.resourceStates.tree.decrease(tree);
+    inGameScene.resourceStates.rock.decrease(rock);
+    inGameScene.resourceStates.gold.decrease(gold);
+    inGameScene.player.attackDamage += 1;
   }
 }

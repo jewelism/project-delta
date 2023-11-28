@@ -3,12 +3,9 @@ import { getUIStyle } from '@/phaser/constants';
 export class ResourceState extends Phaser.GameObjects.Text {
   resourceAmount: number;
 
-  constructor(
-    scene: Phaser.Scene,
-    { x, y, initAmount, texture }: { x: number; y: number; initAmount: number; texture: string },
-  ) {
-    super(scene, x, y, String(initAmount), getUIStyle());
-    this.resourceAmount = initAmount;
+  constructor(scene: Phaser.Scene, { x, y, texture }: { x: number; y: number; texture: string }) {
+    super(scene, x, y, '0', getUIStyle());
+    this.resourceAmount = 0;
 
     scene.add
       .image(x - 25, y - 3, texture)

@@ -14,7 +14,7 @@ export class InGameScene extends Phaser.Scene {
   player: Player;
   resources: Phaser.Physics.Arcade.Group;
   playerIndicator: Phaser.GameObjects.Container;
-  resourceStates: ResourceState[];
+  resourceStates: { tree: ResourceState; rock: ResourceState; gold: ResourceState };
 
   constructor() {
     super('InGameScene');
@@ -28,6 +28,16 @@ export class InGameScene extends Phaser.Scene {
       frameWidth: 45,
       frameHeight: 45,
       startFrame: 0,
+    });
+    this.load.spritesheet('goldMine', 'phaser/objects/Stones_ores_gems_without_grass_x16.png', {
+      frameWidth: 16,
+      frameHeight: 16,
+      startFrame: 23,
+    });
+    this.load.spritesheet('goldBar', 'phaser/objects/Stones_ores_gems_without_grass_x16.png', {
+      frameWidth: 16,
+      frameHeight: 16,
+      startFrame: 27,
     });
 
     this.load.spritesheet('alex', 'phaser/players/spr_alex.png', {
