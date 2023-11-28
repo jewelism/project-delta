@@ -5,10 +5,11 @@ import { createMoveAnim, playMoveAnim } from '@/phaser/utils/helper';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   attackTimer: Phaser.Time.TimerEvent;
-  attackRange: number = 200;
-  attackSpeed: number = 1000;
-  attackDamage: number = 2;
-  moveSpeed: number = 100;
+  attackRange: number = 100;
+  attackSpeed: number = 100;
+  attackDamage: number = 100;
+  defence: number = 100;
+  moveSpeed: number = 200;
   spriteKey: string;
 
   constructor(scene: Phaser.Scene, { x, y, spriteKey }) {
@@ -65,14 +66,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
           text: `+${resourceReward}`,
           color: closest.name === 'rock' ? '#84b4c8' : '#619196',
         });
-        (this.scene as InGameScene).resourceStates[closest.name].increase(this.attackDamage);
+        (this.scene as InGameScene).resourceStates[closest.name].increase(resourceReward);
 
         this.scene.time.delayedCall(150, () => {
           closest.clearTint();
         });
 
         canPressQ = false;
-        this.scene.time.delayedCall(this.attackSpeed, () => {
+        this.scene.time.delayedCall(this.getAttackSpeedMs(), () => {
           canPressQ = true;
         });
       }
@@ -110,7 +111,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   //     .setX(this.x - 15)
   //     .setY(this.y + 15);
   // }
-
+  getAttackSpeedMs() {
+    return (250 - this.attackSpeed) * 10;
+  }
   getMoveSpeed() {
     return this.moveSpeed;
   }
@@ -125,10 +128,19 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.setVelocityX(xSpeed);
     this.setVelocityY(ySpeed);
   }
-  getAttackDamageUpgradeCost() {
-    if (this.attackDamage >= 3) {
-      return { rock: this.attackDamage * 20, tree: this.attackDamage * 20, gold: 1 };
+  getUpgradeCost(id: string) {
+    if (this[id] >= 200) {
+      return { rock: this[id] * 20, tree: this[id] * 20, gold: this[id] * 2 };
     }
-    return { rock: this.attackDamage * 5, tree: this.attackDamage * 5 };
+    return { rock: this[id] * 5, tree: this[id] * 5, gold: 0 };
+  }
+  getUpgradeMax(id: string): number {
+    const max = {
+      attackDamage: 500,
+      attackSpeed: 200,
+      defence: 1000,
+      moveSpeed: 300,
+    };
+    return max[id];
   }
 }

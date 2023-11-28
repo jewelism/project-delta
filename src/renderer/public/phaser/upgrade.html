@@ -4,7 +4,7 @@
     align-items: center;
     background-color: #fff;
     padding: 5px 10px;
-    width: 250px;
+    min-width: 200px;
   }
   .keydown {
     background-color: #ccc;
@@ -25,6 +25,11 @@
     right: 2px;
     font-size: 12px;
   }
+  .current-desc-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
   .upgrade-current-cost {
     font-size: 12px;
     display: flex;
@@ -38,6 +43,7 @@
   #desc {
     color: #999;
     font-size: 12px;
+    margin-top: 3px;
   }
   .upgrade-icon {
     width: 32px;
@@ -56,6 +62,7 @@
     height: 29px;
     background-image: url('phaser/objects/rock31x29.png');
     zoom: 0.4;
+    margin-right: 10px;
   }
   .tree-icon {
     width: 45px;
@@ -63,6 +70,18 @@
     background-image: url('phaser/objects/tree45x45.png');
     background-position: 0 0;
     zoom: 0.25;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  .gold-icon {
+    width: 16px;
+    height: 16px;
+    background-image: url('phaser/objects/Stones_ores_gems_without_grass_x16.png');
+    background-position: 16px 96px;
+    zoom: 1;
+    margin-left: 5px;
+    position: relative;
+    top: -1px;
   }
 </style>
 <button type="button" id="button">
@@ -70,16 +89,15 @@
     <div id="upgrade-icon" class="upgrade-icon"></div>
     <span id="shortcutText"></span>
   </div>
-  <div>
+  <div class="current-desc-wrap">
     <div class="upgrade-current-cost">
-      <div>(<span id="current">1</span> / <span id="max">5</span>)</div>
       <div id="cost">
         <div class="rock-icon"></div>
-        <span>1</span>
+        <span id="rock">1</span>
         <div class="tree-icon"></div>
-        <span>1</span>
-        <div class="rock-icon"></div>
-        <span>1</span>
+        <span id="tree">1</span>
+        <div class="gold-icon"></div>
+        <span id="gold">0</span>
       </div>
     </div>
     <div id="desc"></div>

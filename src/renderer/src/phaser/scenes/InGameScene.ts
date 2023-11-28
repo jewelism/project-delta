@@ -14,7 +14,12 @@ export class InGameScene extends Phaser.Scene {
   player: Player;
   resources: Phaser.Physics.Arcade.Group;
   playerIndicator: Phaser.GameObjects.Container;
-  resourceStates: { tree: ResourceState; rock: ResourceState; gold: ResourceState };
+  resourceStates: {
+    tree: ResourceState;
+    rock: ResourceState;
+    gold: ResourceState;
+    decreaseByUpgrade: ({ tree, rock, gold }) => void;
+  };
 
   constructor() {
     super('InGameScene');

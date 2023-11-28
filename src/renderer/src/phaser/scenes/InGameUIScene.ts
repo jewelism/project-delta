@@ -2,15 +2,34 @@ import { InGameScene } from '@/phaser/scenes/InGameScene';
 import { ResourceState } from '@/phaser/ui/ResourceState';
 import { IconButton } from '@/phaser/ui/IconButton';
 
+const INIT_PLAYER_STATE_LIST = [
+  {
+    id: 'attackDamage',
+    spriteKey: 'sword1',
+    shortcutText: 'A',
+    desc: 'attack damage +1',
+  },
+  {
+    id: 'attackSpeed',
+    spriteKey: 'fist',
+    shortcutText: 'S',
+    desc: 'attack speed +1%',
+  },
+  { id: 'defence', spriteKey: 'defence1', shortcutText: 'D', desc: 'defence +1' },
+  { id: 'moveSpeed', spriteKey: 'boots', shortcutText: 'F', desc: 'move speed +1%' },
+];
+
 export class InGameUIScene extends Phaser.Scene {
   upgradeUI: Phaser.GameObjects.Container;
   buttonElements: Phaser.GameObjects.DOMElement[];
+  stateElement: Phaser.GameObjects.DOMElement;
 
   constructor() {
     super('InGameUIScene');
   }
   preload() {
     this.load.html('upgrade', 'phaser/upgrade.html');
+    this.load.html('player_state', 'phaser/player_state.html');
     this.load.spritesheet('sword1', 'phaser/ui/upgrade_icon32x32.png', {
       frameWidth: 32,
       frameHeight: 32,
@@ -56,6 +75,11 @@ export class InGameUIScene extends Phaser.Scene {
         y: 85,
         texture: 'goldBar',
       }),
+      decreaseByUpgrade({ tree, rock, gold }) {
+        this.tree.decrease(tree);
+        this.rock.decrease(rock);
+        this.gold.decrease(gold);
+      },
     };
 
     this.createOpenUpgradeUIButton(this);
@@ -78,47 +102,40 @@ export class InGameUIScene extends Phaser.Scene {
   createUpgradeUI(scene: Phaser.Scene) {
     this.upgradeUI = scene.add.container(0, 0).setVisible(false);
 
-    const buttonElements = [
-      {
-        id: 'attackDamage',
-        spriteKey: 'sword1',
-        shortcutText: 'A',
-        desc: 'attack damage +1',
-      },
-      {
-        id: 'attackSpeed',
-        spriteKey: 'fist',
-        shortcutText: 'S',
-        desc: 'attack speed +1%',
-      },
-      { id: 'defence', spriteKey: 'defence1', shortcutText: 'D', desc: 'defence +1' },
-      { id: 'moveSpeed', spriteKey: 'boots', shortcutText: 'F', desc: 'move speed +1%' },
-    ].map(({ id, spriteKey, shortcutText, desc }, index) => {
-      const element = new Phaser.GameObjects.DOMElement(scene, 50, (index + 1) * 50)
-        .setOrigin(0, 0)
-        .createFromCache('upgrade')
-        .addListener('click');
-      element.getChildByID('upgrade-icon').classList.add(spriteKey);
-      element.getChildByID('shortcutText').textContent = shortcutText;
-      element.getChildByID('desc').textContent = desc;
-      const buttonEl = element.getChildByID('button');
-      const onKeyDown = () => {
+    this.buttonElements = INIT_PLAYER_STATE_LIST.map(
+      ({ id, spriteKey, shortcutText, desc }, index) => {
+        const element = new Phaser.GameObjects.DOMElement(scene, 300, (index + 1) * 50)
+          .setOrigin(0, 0)
+          .createFromCache('upgrade')
+          .addListener('click')
+          .setName(id);
+        element.getChildByID('upgrade-icon').classList.add(spriteKey);
+        element.getChildByID('shortcutText').textContent = shortcutText;
+        element.getChildByID('desc').textContent = desc;
         const inGameScene = this.scene.get('InGameScene') as InGameScene;
-        inGameScene.events.emit('upgrade', id);
-        buttonEl.classList.add('keydown');
-      };
-      const onKeyUp = () => {
-        buttonEl.classList.remove('keydown');
-      };
-      buttonEl.addEventListener('pointerdown', onKeyDown);
-      buttonEl.addEventListener('pointerup', onKeyUp);
-      buttonEl.addEventListener('pointerout', onKeyUp);
-      scene.input.keyboard
-        .addKey(Phaser.Input.Keyboard.KeyCodes[shortcutText])
-        .on('down', onKeyDown)
-        .on('up', onKeyUp);
-      return element;
-    });
+        const { tree, rock, gold } = inGameScene.player.getUpgradeCost(id);
+        element.getChildByID('tree').textContent = String(tree);
+        element.getChildByID('rock').textContent = String(rock);
+        element.getChildByID('gold').textContent = String(gold);
+
+        const buttonEl = element.getChildByID('button');
+        const onKeyDown = () => {
+          buttonEl.classList.add('keydown');
+          this.upgrade(id);
+        };
+        const onKeyUp = () => {
+          buttonEl.classList.remove('keydown');
+        };
+        buttonEl.addEventListener('pointerdown', onKeyDown);
+        buttonEl.addEventListener('pointerup', onKeyUp);
+        buttonEl.addEventListener('pointerout', onKeyUp);
+        scene.input.keyboard
+          .addKey(Phaser.Input.Keyboard.KeyCodes[shortcutText])
+          .on('down', onKeyDown)
+          .on('up', onKeyUp);
+        return element;
+      },
+    );
 
     const uiWrap = scene.add
       .rectangle(0, 0, Number(scene.game.config.width), Number(scene.game.config.height))
@@ -126,11 +143,15 @@ export class InGameUIScene extends Phaser.Scene {
       .setScrollFactor(0)
       .setFillStyle(0x000000, 0.7);
 
-    this.upgradeUI.add([uiWrap, ...buttonElements]).setDepth(9997);
+    this.createPlayerStateUI(this);
+    this.upgradeUI.add([uiWrap, this.stateElement, ...this.buttonElements]).setDepth(9997);
   }
-  canUpgrade() {
+  canUpgrade(id: string) {
     const inGameScene = this.scene.get('InGameScene') as InGameScene;
-    const { tree, rock, gold } = inGameScene.player.getAttackDamageUpgradeCost();
+    if (inGameScene.player[id] >= inGameScene.player.getUpgradeMax(id)) {
+      return { canUpgrade: false, cost: { tree: 0, rock: 0, gold: 0 } };
+    }
+    const { tree, rock, gold } = inGameScene.player.getUpgradeCost(id);
     const { tree: treeState, rock: rockState, gold: goldState } = inGameScene.resourceStates;
     return {
       canUpgrade:
@@ -140,16 +161,30 @@ export class InGameUIScene extends Phaser.Scene {
       cost: { tree, rock, gold },
     };
   }
-  attackDamageUpgrade() {
+  upgrade(id: string) {
     const inGameScene = this.scene.get('InGameScene') as InGameScene;
-    const { canUpgrade, cost } = this.canUpgrade();
+    const { canUpgrade, cost } = this.canUpgrade(id);
     if (!canUpgrade) {
       return;
     }
-    const { tree, rock, gold } = cost;
-    inGameScene.resourceStates.tree.decrease(tree);
-    inGameScene.resourceStates.rock.decrease(rock);
-    inGameScene.resourceStates.gold.decrease(gold);
-    inGameScene.player.attackDamage += 1;
+    inGameScene.resourceStates.decreaseByUpgrade(cost);
+    inGameScene.player[id] += 1;
+    this.updatePlayerStateUI(id);
+  }
+  createPlayerStateUI(scene: Phaser.Scene) {
+    this.stateElement = new Phaser.GameObjects.DOMElement(scene, 50, 50)
+      .setOrigin(0, 0)
+      .createFromCache('player_state');
+    const inGameScene = this.scene.get('InGameScene') as InGameScene;
+    INIT_PLAYER_STATE_LIST.forEach(({ id }) => {
+      this.updatePlayerStateUI(id);
+      this.stateElement.getChildByID(`${id}-max`).textContent = String(
+        inGameScene.player.getUpgradeMax(id),
+      );
+    });
+  }
+  updatePlayerStateUI(id: string) {
+    const inGameScene = this.scene.get('InGameScene') as InGameScene;
+    this.stateElement.getChildByID(id).textContent = inGameScene.player[id];
   }
 }

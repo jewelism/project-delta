@@ -1,5 +1,5 @@
 export class Resource extends Phaser.Physics.Arcade.Image {
-  health: number = 3;
+  health: number = 2000;
 
   constructor(scene, { x, y, name }) {
     super(scene, x, y, name);
