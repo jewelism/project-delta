@@ -1,7 +1,6 @@
 import { Resource } from '@/phaser/objects/Resource';
 import { InGameScene } from '@/phaser/scenes/InGameScene';
 import { EaseText } from '@/phaser/ui/EaseText';
-import { HpBar } from '@/phaser/ui/HpBar';
 import { createMoveAnim, playMoveAnim } from '@/phaser/utils/helper';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
@@ -12,7 +11,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   moveSpeed: number = 75;
   attackRangeCircle: Phaser.GameObjects.Graphics;
   spriteKey: string;
-  hpBar: HpBar;
 
   constructor(scene: Phaser.Scene, { x, y, spriteKey }) {
     super(scene, x, y, spriteKey);
@@ -28,16 +26,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.bindPressQ();
     createMoveAnim(this, spriteKey);
-
-    this.createAttackRangeCircle(scene);
-    this.hpBar = new HpBar(scene, { owner: this, maxHp: 1000 });
   }
 
   preUpdate() {
     playMoveAnim(this, this.spriteKey);
     this.playerMoveWithKeyboard();
-    this.updateObjectFollowPlayer();
-    this.hpBar.updateHpBar();
   }
   bindPressQ() {
     // GATHER resources
@@ -118,17 +111,5 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       return { rock: this[id] * 20, tree: this[id] * 20, gold: this[id] * 2 };
     }
     return { rock: this[id] * 5, tree: this[id] * 5, gold: 0 };
-  }
-  createAttackRangeCircle(scene: Phaser.Scene) {
-    this.attackRangeCircle = scene.add
-      .graphics({ lineStyle: { width: 1, color: 0xff0000 } })
-      .setAlpha(0.3);
-    this.attackRangeCircle.strokeCircle(0, 0, this.attackRange);
-  }
-  updateObjectFollowPlayer() {
-    const x = this.x + this.width / 2;
-    const y = this.y + this.height / 2;
-    this.attackRangeCircle.x = x;
-    this.attackRangeCircle.y = y;
   }
 }
