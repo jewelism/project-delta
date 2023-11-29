@@ -9,7 +9,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   attackSpeed: number = 100;
   attackDamage: number = 100;
   defence: number = 100;
-  moveSpeed: number = 200;
+  moveSpeed: number = 75;
   spriteKey: string;
 
   constructor(scene: Phaser.Scene, { x, y, spriteKey }) {
@@ -32,17 +32,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   preUpdate() {
     playMoveAnim(this, this.spriteKey);
     this.playerMoveWithKeyboard();
-    // if (!this.attackTimer) {
-    //   this.attackTimer = this.scene.time.delayedCall(
-    //     this.attackSpeed / GAME.speed,
-    //     () => {
-    //       this.attack();
-    //       this.attackTimer = null;
-    //     }
-    //   );
-    // }
   }
-  attack() {}
   bindPressQ() {
     // GATHER resources
     let canPressQ = true;
@@ -81,9 +71,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     return this;
   }
   attackW() {}
-  // get upgradeCost() {
-  //   return this.damage * 2;
-  // }
   // shoot() {
   //   if ((this.scene as PlayScene).enemies?.getChildren().length === 0) {
   //     return;
@@ -102,14 +89,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   //     return;
   //   }
   //   this.createMissile();
-  // }
-  // createMissile() {
-  //   new Missile(this.scene, {
-  //     shooter: this,
-  //     damage: this.damage,
-  //   })
-  //     .setX(this.x - 15)
-  //     .setY(this.y + 15);
   // }
   getAttackSpeedMs() {
     return (250 - this.attackSpeed) * 10;
@@ -133,14 +112,5 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       return { rock: this[id] * 20, tree: this[id] * 20, gold: this[id] * 2 };
     }
     return { rock: this[id] * 5, tree: this[id] * 5, gold: 0 };
-  }
-  getUpgradeMax(id: string): number {
-    const max = {
-      attackDamage: 500,
-      attackSpeed: 200,
-      defence: 1000,
-      moveSpeed: 300,
-    };
-    return max[id];
   }
 }

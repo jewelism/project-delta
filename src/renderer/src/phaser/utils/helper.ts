@@ -63,3 +63,25 @@ export const createMoveAnim = (char, spriteKey: string) => {
   });
   return char;
 };
+
+export const getUpgradeMax = (id: string): number => {
+  const max = {
+    attackDamage: 500,
+    attackSpeed: 200,
+    defence: 1000,
+    moveSpeed: 300,
+  };
+  return max[id];
+};
+
+export const updateUpgradeUIText = (
+  element: Phaser.GameObjects.DOMElement,
+  { spriteKey, shortcutText, desc, tree, rock, gold },
+) => {
+  element.getChildByID('upgrade-icon').classList.add(spriteKey);
+  element.getChildByID('shortcutText').textContent = shortcutText;
+  element.getChildByID('desc').textContent = desc;
+  element.getChildByID('tree').textContent = String(tree);
+  element.getChildByID('rock').textContent = String(rock);
+  element.getChildByID('gold').textContent = String(gold);
+};

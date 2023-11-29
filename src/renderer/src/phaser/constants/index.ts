@@ -12,3 +12,20 @@ export const UPGRADE_TEXT_STYLE = {
   stroke: '#ffffff',
   strokeThickness: 2, // 테두리 두께
 };
+
+export const INIT_PLAYER_STATE_LIST = [
+  {
+    id: 'attackDamage',
+    spriteKey: 'sword1',
+    shortcutText: 'A',
+    desc: 'attack damage +1',
+  },
+  {
+    id: 'attackSpeed',
+    spriteKey: 'fist',
+    shortcutText: 'S',
+    desc: 'attack speed +1%',
+  },
+  { id: 'defence', spriteKey: 'defence1', shortcutText: 'D', desc: 'defence +1' },
+  { id: 'moveSpeed', spriteKey: 'boots', shortcutText: 'F', desc: 'move speed +1%' },
+];

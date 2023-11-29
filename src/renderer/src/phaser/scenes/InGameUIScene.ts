@@ -1,23 +1,8 @@
 import { InGameScene } from '@/phaser/scenes/InGameScene';
 import { ResourceState } from '@/phaser/ui/ResourceState';
 import { IconButton } from '@/phaser/ui/IconButton';
-
-const INIT_PLAYER_STATE_LIST = [
-  {
-    id: 'attackDamage',
-    spriteKey: 'sword1',
-    shortcutText: 'A',
-    desc: 'attack damage +1',
-  },
-  {
-    id: 'attackSpeed',
-    spriteKey: 'fist',
-    shortcutText: 'S',
-    desc: 'attack speed +1%',
-  },
-  { id: 'defence', spriteKey: 'defence1', shortcutText: 'D', desc: 'defence +1' },
-  { id: 'moveSpeed', spriteKey: 'boots', shortcutText: 'F', desc: 'move speed +1%' },
-];
+import { getUpgradeMax, updateUpgradeUIText } from '@/phaser/utils/helper';
+import { INIT_PLAYER_STATE_LIST } from '@/phaser/constants';
 
 export class InGameUIScene extends Phaser.Scene {
   upgradeUI: Phaser.GameObjects.Container;
@@ -57,7 +42,7 @@ export class InGameUIScene extends Phaser.Scene {
     });
   }
   create() {
-    const x = Number(this.game.config.width) - 50;
+    const x = Number(this.game.config.width) - 75;
     const inGameScene = this.scene.get('InGameScene') as InGameScene;
     inGameScene.resourceStates = {
       rock: new ResourceState(this, {
@@ -86,9 +71,12 @@ export class InGameUIScene extends Phaser.Scene {
     this.createUpgradeUI(this);
   }
   createOpenUpgradeUIButton(scene: Phaser.Scene) {
-    const onClick = () => {
-      this.upgradeUI.setVisible(!this.upgradeUI.visible);
+    const onClick = (visible: boolean = !this.upgradeUI.visible) => {
+      this.upgradeUI.setVisible(visible);
     };
+    scene.input.keyboard
+      .addKey(Phaser.Input.Keyboard.KeyCodes.ESC)
+      .on('down', () => onClick(false));
     new IconButton(scene, {
       x: Number(scene.game.config.width) - 100,
       y: Number(scene.game.config.height) - 100,
@@ -109,14 +97,10 @@ export class InGameUIScene extends Phaser.Scene {
           .createFromCache('upgrade')
           .addListener('click')
           .setName(id);
-        element.getChildByID('upgrade-icon').classList.add(spriteKey);
-        element.getChildByID('shortcutText').textContent = shortcutText;
-        element.getChildByID('desc').textContent = desc;
+
         const inGameScene = this.scene.get('InGameScene') as InGameScene;
         const { tree, rock, gold } = inGameScene.player.getUpgradeCost(id);
-        element.getChildByID('tree').textContent = String(tree);
-        element.getChildByID('rock').textContent = String(rock);
-        element.getChildByID('gold').textContent = String(gold);
+        updateUpgradeUIText(element, { spriteKey, shortcutText, desc, tree, rock, gold });
 
         const buttonEl = element.getChildByID('button');
         const onKeyDown = () => {
@@ -148,7 +132,7 @@ export class InGameUIScene extends Phaser.Scene {
   }
   canUpgrade(id: string) {
     const inGameScene = this.scene.get('InGameScene') as InGameScene;
-    if (inGameScene.player[id] >= inGameScene.player.getUpgradeMax(id)) {
+    if (inGameScene.player[id] >= getUpgradeMax(id)) {
       return { canUpgrade: false, cost: { tree: 0, rock: 0, gold: 0 } };
     }
     const { tree, rock, gold } = inGameScene.player.getUpgradeCost(id);
@@ -164,23 +148,30 @@ export class InGameUIScene extends Phaser.Scene {
   upgrade(id: string) {
     const inGameScene = this.scene.get('InGameScene') as InGameScene;
     const { canUpgrade, cost } = this.canUpgrade(id);
-    if (!canUpgrade) {
-      return;
-    }
+    // if (!canUpgrade) {
+    //   return;
+    // }
     inGameScene.resourceStates.decreaseByUpgrade(cost);
     inGameScene.player[id] += 1;
     this.updatePlayerStateUI(id);
+    this.buttonElements.forEach((element) => {
+      const { name } = element;
+      const { tree, rock, gold } = inGameScene.player.getUpgradeCost(name);
+      updateUpgradeUIText(element, {
+        ...INIT_PLAYER_STATE_LIST.find(({ id }) => id === name),
+        tree,
+        rock,
+        gold,
+      });
+    });
   }
   createPlayerStateUI(scene: Phaser.Scene) {
     this.stateElement = new Phaser.GameObjects.DOMElement(scene, 50, 50)
       .setOrigin(0, 0)
       .createFromCache('player_state');
-    const inGameScene = this.scene.get('InGameScene') as InGameScene;
     INIT_PLAYER_STATE_LIST.forEach(({ id }) => {
       this.updatePlayerStateUI(id);
-      this.stateElement.getChildByID(`${id}-max`).textContent = String(
-        inGameScene.player.getUpgradeMax(id),
-      );
+      this.stateElement.getChildByID(`${id}-max`).textContent = String(getUpgradeMax(id));
     });
   }
   updatePlayerStateUI(id: string) {
