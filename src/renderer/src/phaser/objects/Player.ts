@@ -4,12 +4,12 @@ import { EaseText } from '@/phaser/ui/EaseText';
 import { createMoveAnim, playMoveAnim } from '@/phaser/utils/helper';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
-  attackTimer: Phaser.Time.TimerEvent;
-  attackRange: number = 100;
+  attackRange: number = 50;
   attackSpeed: number = 100;
   attackDamage: number = 100;
   defence: number = 100;
   moveSpeed: number = 75;
+  attackRangeCircle: Phaser.GameObjects.Graphics;
   spriteKey: string;
 
   constructor(scene: Phaser.Scene, { x, y, spriteKey }) {
@@ -26,12 +26,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.bindPressQ();
     createMoveAnim(this, spriteKey);
-    // scene.m_beamSound.play();
+
+    this.createAttackRangeCircle(scene);
   }
 
   preUpdate() {
     playMoveAnim(this, this.spriteKey);
     this.playerMoveWithKeyboard();
+    this.updateAttackRangeCircle();
   }
   bindPressQ() {
     // GATHER resources
@@ -112,5 +114,15 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       return { rock: this[id] * 20, tree: this[id] * 20, gold: this[id] * 2 };
     }
     return { rock: this[id] * 5, tree: this[id] * 5, gold: 0 };
+  }
+  createAttackRangeCircle(scene: Phaser.Scene) {
+    this.attackRangeCircle = scene.add
+      .graphics({ lineStyle: { width: 1, color: 0xff0000 } })
+      .setAlpha(0.3);
+    this.attackRangeCircle.strokeCircle(0, 0, this.attackRange);
+  }
+  updateAttackRangeCircle() {
+    this.attackRangeCircle.x = this.x + this.width / 2;
+    this.attackRangeCircle.y = this.y + this.height / 2;
   }
 }
