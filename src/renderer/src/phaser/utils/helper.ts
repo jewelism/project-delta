@@ -70,6 +70,7 @@ export const getUpgradeMax = (id: string): number => {
     attackSpeed: 200,
     defence: 1000,
     moveSpeed: 300,
+    hp: 10000,
   };
   return max[id];
 };

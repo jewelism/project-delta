@@ -69,6 +69,7 @@ export class InGameUIScene extends Phaser.Scene {
 
     this.createOpenUpgradeUIButton(this);
     this.createUpgradeUI(this);
+    this.createPlayerKeyButton(this);
   }
   createOpenUpgradeUIButton(scene: Phaser.Scene) {
     const onClick = (visible: boolean = !this.upgradeUI.visible) => {
@@ -78,14 +79,34 @@ export class InGameUIScene extends Phaser.Scene {
       .addKey(Phaser.Input.Keyboard.KeyCodes.ESC)
       .on('down', () => onClick(false));
     new IconButton(scene, {
-      x: Number(scene.game.config.width) - 100,
-      y: Number(scene.game.config.height) - 100,
+      x: Number(scene.game.config.width) - 50,
+      y: Number(scene.game.config.height) - 50,
       width: 50,
       height: 50,
       spriteKey: 'book1',
       shortcutText: 'C',
       onClick,
     }).setDepth(9999);
+  }
+  createPlayerKeyButton(scene: Phaser.Scene) {
+    [
+      { spriteKey: 'sword1', shortcutText: 'Q' },
+      { spriteKey: 'sword1', shortcutText: 'W' },
+      { spriteKey: 'sword1', shortcutText: 'E' },
+      { spriteKey: 'sword1', shortcutText: 'R' },
+    ]
+      .reverse()
+      .forEach(({ spriteKey, shortcutText }, index) => {
+        new IconButton(scene, {
+          x: Number(scene.game.config.width) - 50 * (index + 2),
+          y: Number(scene.game.config.height) - 50,
+          width: 50,
+          height: 50,
+          spriteKey,
+          shortcutText,
+          onClick: null,
+        }).setDepth(9999);
+      });
   }
   createUpgradeUI(scene: Phaser.Scene) {
     this.upgradeUI = scene.add.container(0, 0).setVisible(false);
@@ -100,6 +121,8 @@ export class InGameUIScene extends Phaser.Scene {
 
         const inGameScene = this.scene.get('InGameScene') as InGameScene;
         const { tree, rock, gold } = inGameScene.player.getUpgradeCost(id);
+        console.log('shortcutText', spriteKey);
+
         updateUpgradeUIText(element, { spriteKey, shortcutText, desc, tree, rock, gold });
 
         const buttonEl = element.getChildByID('button');

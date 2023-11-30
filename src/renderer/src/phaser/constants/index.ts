@@ -26,6 +26,7 @@ export const INIT_PLAYER_STATE_LIST = [
     shortcutText: 'S',
     desc: 'attack speed +1%',
   },
-  { id: 'defence', spriteKey: 'defence1', shortcutText: 'D', desc: 'defence +1' },
-  { id: 'moveSpeed', spriteKey: 'boots', shortcutText: 'F', desc: 'move speed +1%' },
+  { id: 'moveSpeed', spriteKey: 'boots', shortcutText: 'D', desc: 'move speed +1%' },
+  { id: 'defence', spriteKey: 'defence1', shortcutText: 'F', desc: 'defence +1' },
+  { id: 'hp', spriteKey: 'boots', shortcutText: 'G', desc: 'hp +1%' },
 ];

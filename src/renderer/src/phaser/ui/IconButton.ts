@@ -5,6 +5,9 @@ export class IconButton extends Phaser.GameObjects.Container {
     super(scene, x, y);
 
     const onKeyDown = () => {
+      if (!onClick) {
+        return;
+      }
       button.setAlpha(0.4);
       icon.setAlpha(0.4);
       onClick();

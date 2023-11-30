@@ -11,6 +11,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   moveSpeed: number = 75;
   attackRangeCircle: Phaser.GameObjects.Graphics;
   spriteKey: string;
+  maxHp: number = 100;
+  hp: number = this.maxHp;
 
   constructor(scene: Phaser.Scene, { x, y, spriteKey }) {
     super(scene, x, y, spriteKey);
@@ -71,7 +73,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
   attackW() {}
   // shoot() {
-  //   if ((this.scene as PlayScene).enemies?.getChildren().length === 0) {
+  //   if ((this.scene as InGameScene).enemies?.getChildren().length === 0) {
   //     return;
   //   }
   //   const closestEnemy = this.scene.physics.closest(
