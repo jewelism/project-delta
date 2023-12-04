@@ -9,11 +9,13 @@ const throttle = createThrottleFn();
 const throttle2 = createThrottleFn();
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
-  attackRange: number = 50;
+  // attackRange: number = 50;
+  attackRange: number = 500;
   attackSpeed: number = 100;
   attackDamage: number = 100;
   defence: number = 100;
-  moveSpeed: number = 75;
+  // moveSpeed: number = 75;
+  moveSpeed: number = 200;
   attackRangeCircle: Phaser.GameObjects.Graphics;
   spriteKey: string;
   maxHp: number = 100;

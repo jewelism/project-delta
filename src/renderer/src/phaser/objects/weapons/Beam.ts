@@ -1,4 +1,5 @@
 import { Enemy } from '@/phaser/objects/Enemy';
+import { getDirectionAngleBySpeed } from '@/phaser/utils/helper';
 
 export class Beam extends Phaser.Physics.Arcade.Sprite {
   static SPEED = 100;
@@ -22,10 +23,14 @@ export class Beam extends Phaser.Physics.Arcade.Sprite {
     this.moveToTarget();
   }
   moveToTarget() {
-    if (!this.target || (this.target as any).isDestroyed()) {
+    const target = this.target as any;
+    if (!target || target.isDestroyed()) {
       this.destroy();
       return;
     }
-    this.scene.physics.moveToObject(this, this.target, Beam.SPEED);
+    const angle = getDirectionAngleBySpeed(target.x - this.x, target.y - this.y);
+    this.setAngle(angle + 90);
+
+    this.scene.physics.moveToObject(this, target, Beam.SPEED);
   }
 }
