@@ -1,5 +1,6 @@
 import { InGameScene } from '@/phaser/scenes/InGameScene';
-import { createMoveAnim, playMoveAnim } from '@/phaser/utils/helper';
+import { EaseText } from '@/phaser/ui/EaseText';
+import { createFlashFn, createMoveAnim, playMoveAnim } from '@/phaser/utils/helper';
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
   moveSpeed: number = 50;
@@ -37,5 +38,16 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
 
     this.scene.physics.moveToObject(this, player, this.moveSpeed);
+  }
+  decreaseHp(amount: number) {
+    this.hp -= amount;
+    this.damageEffect(amount);
+    if (this.hp <= 0) {
+      this.destroy();
+    }
+  }
+  damageEffect(damage: number) {
+    createFlashFn()(this);
+    new EaseText(this.scene, { x: this.x, y: this.y, text: `${damage}`, color: '#ff0000' });
   }
 }

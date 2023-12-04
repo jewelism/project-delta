@@ -2,9 +2,10 @@ import { Resource } from '@/phaser/objects/Resource';
 import { resourceGapCheck } from '@/phaser/utils';
 
 const getRandomResource = (scene: Phaser.Scene, { x, y }) => {
+  const hp = Phaser.Math.RND.pick(Array.from({ length: 10 }, (_, i) => (i + 10) * 100));
   return Phaser.Math.RND.pick([
-    () => new Resource(scene, { x, y, name: 'rock' }).setScale(0.6),
-    () => new Resource(scene, { x, y, name: 'tree' }).setScale(0.5),
+    () => new Resource(scene, { x, y, name: 'rock', hp }).setScale(0.6),
+    () => new Resource(scene, { x, y, name: 'tree', hp }).setScale(0.5),
   ])();
 };
 
@@ -110,5 +111,14 @@ export const createThrottleFn = () => {
         canPress = true;
       });
     }
+  };
+};
+
+export const createFlashFn = () => {
+  return (char, tintColor = 0xff0000) => {
+    char.setTint(tintColor);
+    char.scene.time.delayedCall(150, () => {
+      char.clearTint();
+    });
   };
 };

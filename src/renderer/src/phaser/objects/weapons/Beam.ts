@@ -1,3 +1,5 @@
+import { Enemy } from '@/phaser/objects/Enemy';
+
 export class Beam extends Phaser.Physics.Arcade.Sprite {
   static SPEED = 100;
   target: Phaser.GameObjects.GameObject;
@@ -11,12 +13,9 @@ export class Beam extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.world.enableBody(this);
     // scene.m_beamSound.play();
-    scene.physics.add.overlap(this, target, (beam, enemy) => {
+    scene.physics.add.overlap(this, target, (beam, enemy: Enemy) => {
       beam.destroy();
-      enemy.hp -= 1;
-      if (enemy.hp <= 0) {
-        enemy.destroy();
-      }
+      enemy.decreaseHp(shooter.attackDamage);
     });
   }
   protected preUpdate(_time: number, _delta: number): void {

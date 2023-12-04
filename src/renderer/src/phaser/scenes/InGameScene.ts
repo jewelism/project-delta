@@ -90,6 +90,8 @@ export class InGameScene extends Phaser.Scene {
     this.physics.add.collider(this.resources, this.player);
 
     this.createEnemy();
+
+    this.physics.add.collider(this.enemies, this.enemies);
   }
   createMap(scene: Phaser.Scene) {
     const map = scene.make.tilemap({
@@ -136,7 +138,7 @@ export class InGameScene extends Phaser.Scene {
   createEnemy() {
     const tempEnemies = Array.from(
       { length: 5 },
-      (_, index) => new Enemy(this, { x: index * 100, y: index * 100, hp: 2, spriteKey: 'skel' }),
+      (_, index) => new Enemy(this, { x: index * 100, y: index * 100, hp: 300, spriteKey: 'skel' }),
     );
     this.enemies.addMultiple(tempEnemies);
 
