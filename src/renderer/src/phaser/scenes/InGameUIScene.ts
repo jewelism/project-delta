@@ -121,7 +121,6 @@ export class InGameUIScene extends Phaser.Scene {
 
         const inGameScene = this.scene.get('InGameScene') as InGameScene;
         const { tree, rock, gold } = inGameScene.player.getUpgradeCost(id);
-        console.log('shortcutText', spriteKey);
 
         updateUpgradeUIText(element, { spriteKey, shortcutText, desc, tree, rock, gold });
 

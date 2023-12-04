@@ -36,10 +36,19 @@ export const generateResource = ({
 };
 
 export const playMoveAnim = (char, spriteKey: string) => {
-  char.body.velocity.x < 0 && char.anims.play(`${spriteKey}-left`, true);
-  char.body.velocity.x > 0 && char.anims.play(`${spriteKey}-right`, true);
-  char.body.velocity.y < 0 && char.anims.play(`${spriteKey}-up`, true);
-  char.body.velocity.y > 0 && char.anims.play(`${spriteKey}-down`, true);
+  if (char.body.velocity.x < 0) {
+    char.anims.play(`${spriteKey}-left`, true);
+    char.direction = 'left';
+  } else if (char.body.velocity.x > 0) {
+    char.anims.play(`${spriteKey}-right`, true);
+    char.directionAngle = 'right';
+  } else if (char.body.velocity.y < 0) {
+    char.anims.play(`${spriteKey}-up`, true);
+    char.directionAngle = 'up';
+  } else if (char.body.velocity.y > 0) {
+    char.anims.play(`${spriteKey}-down`, true);
+    char.directionAngle = 'down';
+  }
 };
 
 export const createMoveAnim = (char, spriteKey: string) => {
@@ -85,4 +94,21 @@ export const updateUpgradeUIText = (
   element.getChildByID('tree').textContent = String(tree);
   element.getChildByID('rock').textContent = String(rock);
   element.getChildByID('gold').textContent = String(gold);
+};
+
+export const getDirectionAngleBySpeed = (xSpeed: number, ySpeed: number) => {
+  return Math.atan2(ySpeed, xSpeed) * (180 / Math.PI);
+};
+
+export const createThrottleFn = () => {
+  let canPress = true;
+  return (scene: Phaser.Scene, callback, delay: number) => {
+    if (canPress) {
+      callback();
+      canPress = false;
+      scene.time.delayedCall(delay, () => {
+        canPress = true;
+      });
+    }
+  };
 };

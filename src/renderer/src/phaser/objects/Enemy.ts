@@ -16,7 +16,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     scene.physics.world.enableBody(this);
     scene.physics.add.existing(this);
 
-    this.setDepth(9).setBodySize(10, 15);
+    this.setDepth(999).setBodySize(10, 15);
     // .setCollideWorldBounds(true);
     // this.setImmovable(true);
     createMoveAnim(this, spriteKey);

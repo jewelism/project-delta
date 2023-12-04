@@ -57,12 +57,18 @@ export class InGameScene extends Phaser.Scene {
       frameWidth: 16,
       frameHeight: 16,
     });
+    this.load.spritesheet('beam_green', 'phaser/effect/beams_9x21.png', {
+      frameWidth: 9,
+      frameHeight: 21,
+      startFrame: 0,
+    });
   }
   create() {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.resources = this.physics.add.group({
       immovable: true,
     });
+    this.enemies = this.physics.add.group();
 
     const { map, playerSpawnPoints } = this.createMap(this);
 
@@ -74,7 +80,6 @@ export class InGameScene extends Phaser.Scene {
     this.scene.launch('InGameUIScene');
 
     this.createMinimap(this.player);
-    new Enemy(this, { x: 200, y: 200, hp: 2, spriteKey: 'skel' });
 
     this.cameras.main
       .setBounds(0, 0, map.heightInPixels, map.widthInPixels)
@@ -84,9 +89,7 @@ export class InGameScene extends Phaser.Scene {
 
     this.physics.add.collider(this.resources, this.player);
 
-    this.events.on('upgrade', (upgradeId: string) => {
-      console.log('upgradeId', upgradeId);
-    });
+    this.createEnemy();
   }
   createMap(scene: Phaser.Scene) {
     const map = scene.make.tilemap({
@@ -130,45 +133,51 @@ export class InGameScene extends Phaser.Scene {
       this.playerIndicator.setPosition(player.x, player.y);
     });
   }
-  // createEnemy() {
-  //   const phaseData = getPhaseData();
-  //   let index = 0;
-  //   let count = 0;
+  createEnemy() {
+    const tempEnemies = Array.from(
+      { length: 5 },
+      (_, index) => new Enemy(this, { x: index * 100, y: index * 100, hp: 2, spriteKey: 'skel' }),
+    );
+    this.enemies.addMultiple(tempEnemies);
 
-  //   this.timer = this.time.addEvent({
-  //     delay: 100 / GAME.speed,
-  //     callback: () => {
-  //       if (this.healthBar.value === 0) {
-  //         return;
-  //       }
-  //       const { phase, hp, spriteKey, frameNo } = phaseData[index];
-  //       const direction = Phaser.Math.RND.integerInRange(0, 3);
-  //       let x, y;
-  //       if (direction === 0) {
-  //         x = Phaser.Math.RND.integerInRange(0, this.cameras.main.worldView.right);
-  //         y = this.cameras.main.worldView.top - 50;
-  //       } else if (direction === 1) {
-  //         x = this.cameras.main.worldView.right + 50;
-  //         y = Phaser.Math.RND.integerInRange(0, this.cameras.main.worldView.bottom);
-  //       } else if (direction === 2) {
-  //         x = Phaser.Math.RND.integerInRange(0, this.cameras.main.worldView.right);
-  //         y = this.cameras.main.worldView.bottom + 50;
-  //       } else if (direction === 3) {
-  //         x = this.cameras.main.worldView.left - 50;
-  //         y = Phaser.Math.RND.integerInRange(0, this.cameras.main.worldView.bottom);
-  //       }
+    //   const phaseData = getPhaseData();
+    //   let index = 0;
+    //   let count = 0;
 
-  //       const pixelAnimal = new PixelAnimal(this, {
-  //         x,
-  //         y,
-  //         hp,
-  //         frameNo,
-  //       });
-  //       this.enemies.add(pixelAnimal);
-  //       count++;
-  //     },
-  //     loop: true,
-  //     callbackScope: this,
-  //   });
-  // }
+    //   this.timer = this.time.addEvent({
+    //     delay: 100 / GAME.speed,
+    //     callback: () => {
+    //       if (this.healthBar.value === 0) {
+    //         return;
+    //       }
+    //       const { phase, hp, spriteKey, frameNo } = phaseData[index];
+    //       const direction = Phaser.Math.RND.integerInRange(0, 3);
+    //       let x, y;
+    //       if (direction === 0) {
+    //         x = Phaser.Math.RND.integerInRange(0, this.cameras.main.worldView.right);
+    //         y = this.cameras.main.worldView.top - 50;
+    //       } else if (direction === 1) {
+    //         x = this.cameras.main.worldView.right + 50;
+    //         y = Phaser.Math.RND.integerInRange(0, this.cameras.main.worldView.bottom);
+    //       } else if (direction === 2) {
+    //         x = Phaser.Math.RND.integerInRange(0, this.cameras.main.worldView.right);
+    //         y = this.cameras.main.worldView.bottom + 50;
+    //       } else if (direction === 3) {
+    //         x = this.cameras.main.worldView.left - 50;
+    //         y = Phaser.Math.RND.integerInRange(0, this.cameras.main.worldView.bottom);
+    //       }
+
+    //       const pixelAnimal = new PixelAnimal(this, {
+    //         x,
+    //         y,
+    //         hp,
+    //         frameNo,
+    //       });
+    //       this.enemies.add(pixelAnimal);
+    //       count++;
+    //     },
+    //     loop: true,
+    //     callbackScope: this,
+    //   });
+  }
 }
