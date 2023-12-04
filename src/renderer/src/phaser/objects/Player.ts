@@ -3,7 +3,12 @@ import { Resource } from '@/phaser/objects/Resource';
 import { Beam } from '@/phaser/objects/weapons/Beam';
 import { InGameScene } from '@/phaser/scenes/InGameScene';
 import { EaseText } from '@/phaser/ui/EaseText';
-import { createThrottleFn, createMoveAnim, playMoveAnim } from '@/phaser/utils/helper';
+import {
+  createThrottleFn,
+  createMoveAnim,
+  playMoveAnim,
+  createFlashFn,
+} from '@/phaser/utils/helper';
 
 const throttle = createThrottleFn();
 const throttle2 = createThrottleFn();
@@ -120,5 +125,16 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       return { rock: this[id] * 20, tree: this[id] * 20, gold: this[id] * 2 };
     }
     return { rock: this[id] * 5, tree: this[id] * 5, gold: 0 };
+  }
+  decreaseHp(amount: number) {
+    this.hp -= amount;
+    this.damageEffect(amount);
+    if (this.hp <= 0) {
+      this.destroy();
+    }
+  }
+  damageEffect(damage: number) {
+    createFlashFn()(this);
+    new EaseText(this.scene, { x: this.x, y: this.y, text: `${damage}`, color: '#ff0000' });
   }
 }

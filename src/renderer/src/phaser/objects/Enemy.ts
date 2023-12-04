@@ -6,6 +6,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   moveSpeed: number = 50;
   hp: number;
   spriteKey: any;
+  damage: number = 10;
+  attackSpeed: number = 2000;
 
   constructor(scene, { x, y, hp, spriteKey }) {
     super(scene, x, y, spriteKey);

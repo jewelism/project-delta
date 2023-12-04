@@ -4,9 +4,11 @@ export class EaseText extends Phaser.GameObjects.Text {
     { x, y, text, color }: { x: number; y: number; text: string; color: string },
   ) {
     super(scene, x, y, text, {
-      fontSize: '14px',
+      fontSize: '13px',
       fontStyle: 'bold',
       color,
+      stroke: '#ffffff',
+      strokeThickness: 2,
     });
 
     scene.add.existing(this);

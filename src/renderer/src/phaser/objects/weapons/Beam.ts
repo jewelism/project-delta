@@ -30,7 +30,6 @@ export class Beam extends Phaser.Physics.Arcade.Sprite {
     }
     const angle = getDirectionAngleBySpeed(target.x - this.x, target.y - this.y);
     this.setAngle(angle + 90);
-
     this.scene.physics.moveToObject(this, target, Beam.SPEED);
   }
 }
