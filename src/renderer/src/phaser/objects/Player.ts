@@ -102,7 +102,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     return this.moveSpeed;
   }
   playerMoveWithKeyboard() {
-    this.emit('moved');
     const { left, right, up, down } = (this.scene as InGameScene).cursors;
     const speed = this.getMoveSpeed();
     // const xSpeed = left.isDown ? -speed : right.isDown ? speed : 0;
@@ -118,6 +117,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     } else if (down.isDown) {
       ySpeed = speed;
     }
+    if (xSpeed === 0 && ySpeed === 0) {
+      this.setVelocity(0);
+      return;
+    }
+    this.emit('moved');
     this.setVelocity(xSpeed, ySpeed);
   }
   getUpgradeCost(id: string) {

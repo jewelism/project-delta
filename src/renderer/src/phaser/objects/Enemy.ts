@@ -3,15 +3,19 @@ import { EaseText } from '@/phaser/ui/EaseText';
 import { createFlashFn, createMoveAnim, playMoveAnim } from '@/phaser/utils/helper';
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
-  moveSpeed: number = 50;
+  static moveSpeed: number = 50;
+
+  maxHp: number;
   hp: number;
   spriteKey: any;
-  damage: number = 10;
-  attackSpeed: number = 2000;
+  static damage: number = 10;
+  static attackSpeed: number = 2000;
+  static sightRange: number = 100;
 
   constructor(scene, { x, y, hp, spriteKey }) {
     super(scene, x, y, spriteKey);
 
+    this.maxHp = hp;
     this.hp = hp;
     this.spriteKey = spriteKey;
 
@@ -19,27 +23,45 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     scene.physics.world.enableBody(this);
     scene.physics.add.existing(this);
 
-    this.setDepth(999).setBodySize(10, 15);
-    // .setCollideWorldBounds(true);
-    // this.setImmovable(true);
+    this.setDepth(999).setBodySize(10, 15).setCollideWorldBounds(true);
     createMoveAnim(this, spriteKey);
+    scene.time.addEvent({
+      delay: 500, // 1000ms = 1s
+      callback: this.move, // 호출할 함수
+      callbackScope: this, // 함수의 'this' 값
+      loop: true, // 이 이벤트를 계속 반복할 것인지
+    });
   }
   preUpdate() {
-    this.moveToPlayer();
     playMoveAnim(this, this.spriteKey);
   }
   isDestroyed() {
     return !this.active;
   }
-  moveToPlayer() {
+  isDamaged() {
+    return this.hp < this.maxHp;
+  }
+  move() {
+    if (this.isDestroyed()) {
+      return;
+    }
     const player = (this.scene as InGameScene).player;
     const distance = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
     if (distance < 10) {
       this.setVelocity(0);
       return;
     }
-
-    this.scene.physics.moveToObject(this, player, this.moveSpeed);
+    if (distance < Enemy.sightRange || this.isDamaged()) {
+      this.scene.physics.moveToObject(this, player, Enemy.moveSpeed);
+      return;
+    }
+    this.randomMove();
+  }
+  randomMove() {
+    const randomX = Phaser.Math.Between(-100, 100);
+    const randomY = Phaser.Math.Between(-100, 100);
+    const randomPoint = new Phaser.Math.Vector2(this.x + randomX, this.y + randomY);
+    this.scene.physics.moveToObject(this, randomPoint, Enemy.moveSpeed);
   }
   decreaseHp(amount: number) {
     this.hp -= amount;

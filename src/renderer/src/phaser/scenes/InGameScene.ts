@@ -72,7 +72,7 @@ export class InGameScene extends Phaser.Scene {
     });
     this.enemies = this.physics.add.group();
 
-    const { map, playerSpawnPoints } = this.createMap(this);
+    const { map, playerSpawnPoints, monsterSpawnPoints } = this.createMap(this);
 
     this.player = new Player(this, {
       spriteKey: 'alex',
@@ -81,6 +81,7 @@ export class InGameScene extends Phaser.Scene {
     });
     this.scene.launch('InGameUIScene');
 
+    this.createEnemy(monsterSpawnPoints);
     this.createMinimap(this.player);
 
     this.cameras.main
@@ -91,16 +92,14 @@ export class InGameScene extends Phaser.Scene {
 
     this.physics.add.collider(this.resources, this.player);
 
-    this.createEnemy();
-
     this.physics.add.collider(this.enemies, this.enemies);
     this.physics.add.collider(this.enemies, this.player, (player: Player, enemy: Enemy) => {
       throttle(
         this,
         () => {
-          player.decreaseHp(enemy.damage);
+          player.decreaseHp(Enemy.damage);
         },
-        enemy.attackSpeed,
+        Enemy.attackSpeed,
       );
     });
   }
@@ -141,17 +140,21 @@ export class InGameScene extends Phaser.Scene {
       .setZoom(0.05)
       .setOrigin(0, 0.5)
       .ignore(player)
+      .ignore(this.enemies)
       .setAlpha(0.7);
     player.on('moved', () => {
       this.playerIndicator.setPosition(player.x, player.y);
     });
   }
-  createEnemy() {
-    const tempEnemies = Array.from(
-      { length: 5 },
-      (_, index) => new Enemy(this, { x: index * 100, y: index * 100, hp: 300, spriteKey: 'skel' }),
-    );
-    this.enemies.addMultiple(tempEnemies);
+  createEnemy(monsterSpawnPoints: Phaser.Types.Tilemaps.TiledObject[]) {
+    monsterSpawnPoints.forEach(({ x, y }) => {
+      const tempEnemies = Array.from(
+        { length: 5 },
+        (_, index) =>
+          new Enemy(this, { x: x + index * 10, y: y + index * 10, hp: 300, spriteKey: 'skel' }),
+      );
+      this.enemies.addMultiple(tempEnemies);
+    });
 
     //   const phaseData = getPhaseData();
     //   let index = 0;
