@@ -1,9 +1,7 @@
 import { Enemy } from '@/phaser/objects/Enemy';
 import { Player } from '@/phaser/objects/Player';
 import { ResourceState } from '@/phaser/ui/ResourceState';
-import { createThrottleFn, generateResource } from '@/phaser/utils/helper';
-
-const throttle = createThrottleFn();
+import { generateResource } from '@/phaser/utils/helper';
 
 const GAME = {
   ZOOM: 2,
@@ -94,13 +92,18 @@ export class InGameScene extends Phaser.Scene {
 
     this.physics.add.collider(this.enemies, this.enemies);
     this.physics.add.collider(this.enemies, this.player, (player: Player, enemy: Enemy) => {
-      throttle(
-        this,
-        () => {
+      if (enemy.isAttacking) {
+        return;
+      }
+      enemy.isAttacking = true;
+      this.time.addEvent({
+        delay: Enemy.attackSpeed,
+        callback: () => {
+          enemy.isAttacking = false;
           player.decreaseHp(Enemy.damage);
         },
-        Enemy.attackSpeed,
-      );
+        callbackScope: this,
+      });
     });
   }
   createMap(scene: Phaser.Scene) {

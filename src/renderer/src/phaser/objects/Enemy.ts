@@ -11,6 +11,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   static damage: number = 10;
   static attackSpeed: number = 2000;
   static sightRange: number = 100;
+  isAttacking: boolean = false;
 
   constructor(scene, { x, y, hp, spriteKey }) {
     super(scene, x, y, spriteKey);
@@ -64,14 +65,14 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.scene.physics.moveToObject(this, randomPoint, Enemy.moveSpeed);
   }
   decreaseHp(amount: number) {
+    if (this.isDestroyed()) {
+      return;
+    }
     this.hp -= amount;
-    this.damageEffect(amount);
+    createFlashFn()(this);
+    new EaseText(this.scene, { x: this.x, y: this.y, text: `${amount}`, color: '#ff0000' });
     if (this.hp <= 0) {
       this.destroy();
     }
-  }
-  damageEffect(damage: number) {
-    createFlashFn()(this);
-    new EaseText(this.scene, { x: this.x, y: this.y, text: `${damage}`, color: '#ff0000' });
   }
 }

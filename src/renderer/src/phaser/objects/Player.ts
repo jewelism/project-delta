@@ -39,7 +39,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.bindPressQ();
     createMoveAnim(this, spriteKey);
   }
-
+  isDestroyed() {
+    return !this.active;
+  }
   preUpdate() {
     playMoveAnim(this, this.spriteKey);
     this.playerMoveWithKeyboard();
@@ -131,14 +133,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     return { rock: this[id] * 5, tree: this[id] * 5, gold: 0 };
   }
   decreaseHp(amount: number) {
+    if (this.isDestroyed()) {
+      return;
+    }
     this.hp -= amount;
-    this.damageEffect(amount);
+    createFlashFn()(this);
+    new EaseText(this.scene, { x: this.x, y: this.y, text: `${amount}`, color: '#ff0000' });
     if (this.hp <= 0) {
       this.destroy();
     }
-  }
-  damageEffect(damage: number) {
-    createFlashFn()(this);
-    new EaseText(this.scene, { x: this.x, y: this.y, text: `${damage}`, color: '#ff0000' });
   }
 }
