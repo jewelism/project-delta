@@ -43,29 +43,29 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   preUpdate() {
     playMoveAnim(this, this.spriteKey);
     this.playerMoveWithKeyboard();
-    this.shoot();
+    // this.shoot();
   }
   bindPressQ() {
     // GATHER resources
+    const pressQ = () => {
+      const { resources } = this.scene as InGameScene;
+      const closest = this.scene.physics.closest(this, resources.getChildren()) as Resource;
+
+      const { x: closestX, y: closestY } = closest.getCenter();
+      const { x, y } = this.getCenter();
+      const distance = Phaser.Math.Distance.Between(x, y, closestX, closestY);
+
+      if (distance > this.attackRange) {
+        return;
+      }
+      const resourceReward = closest.decreaseHp(this.attackDamage);
+
+      (this.scene as InGameScene).resourceStates[closest.name].increase(resourceReward);
+    };
     this.scene.input.keyboard.on('keydown-Q', () => {
-      throttle2(this.scene, this.pressQ.bind(this), this.getAttackSpeedMs());
+      throttle2(this.scene, pressQ, this.getAttackSpeedMs());
     });
     return this;
-  }
-  pressQ() {
-    const { resources } = this.scene as InGameScene;
-    const closest = this.scene.physics.closest(this, resources.getChildren()) as Resource;
-
-    const { x: closestX, y: closestY } = closest.getCenter();
-    const { x, y } = this.getCenter();
-    const distance = Phaser.Math.Distance.Between(x, y, closestX, closestY);
-
-    if (distance > this.attackRange) {
-      return;
-    }
-    const resourceReward = closest.decreaseHp(this.attackDamage);
-
-    (this.scene as InGameScene).resourceStates[closest.name].increase(resourceReward);
   }
   attackW() {}
   shoot() {
