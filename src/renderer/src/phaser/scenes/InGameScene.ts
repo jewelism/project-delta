@@ -96,11 +96,11 @@ export class InGameScene extends Phaser.Scene {
         return;
       }
       enemy.isAttacking = true;
+      player.decreaseHp(Enemy.damage);
       this.time.addEvent({
         delay: Enemy.attackSpeed,
         callback: () => {
           enemy.isAttacking = false;
-          player.decreaseHp(Enemy.damage);
         },
         callbackScope: this,
       });

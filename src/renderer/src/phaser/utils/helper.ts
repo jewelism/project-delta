@@ -104,13 +104,14 @@ export const getDirectionAngleBySpeed = (xSpeed: number, ySpeed: number) => {
 export const createThrottleFn = () => {
   let canPress = true;
   return (scene: Phaser.Scene, callback, delay: number) => {
-    if (canPress) {
-      callback();
-      canPress = false;
-      scene.time.delayedCall(delay, () => {
-        canPress = true;
-      });
+    if (!canPress) {
+      return;
     }
+    callback();
+    canPress = false;
+    scene.time.delayedCall(delay, () => {
+      canPress = true;
+    });
   };
 };
 

@@ -10,8 +10,10 @@ import {
   createFlashFn,
 } from '@/phaser/utils/helper';
 
-const throttle = createThrottleFn();
-const throttle2 = createThrottleFn();
+const keyActions = {
+  Q: createThrottleFn(),
+  W: createThrottleFn(),
+};
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   // attackRange: number = 50;
@@ -25,6 +27,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   spriteKey: string;
   maxHp: number = 100;
   hp: number = this.maxHp;
+  keyboard: Record<string, Phaser.Input.Keyboard.Key> = {};
 
   constructor(scene: Phaser.Scene, { x, y, spriteKey }) {
     super(scene, x, y, spriteKey);
@@ -35,9 +38,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
     scene.physics.world.enableBody(this);
     this.setOrigin(0, 0).setBodySize(12, 18).setDepth(9).setCollideWorldBounds(true);
-
-    this.bindPressQ();
     createMoveAnim(this, spriteKey);
+
+    ['Q', 'W', 'E', 'R'].forEach((key) => {
+      this.keyboard[key] = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[key]);
+    });
   }
   isDestroyed() {
     return !this.active;
@@ -46,66 +51,63 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     playMoveAnim(this, this.spriteKey);
     this.playerMoveWithKeyboard();
     // this.shoot();
-  }
-  bindPressQ() {
-    // GATHER resources
-    const pressQ = () => {
-      const { resources } = this.scene as InGameScene;
-      const closest = this.scene.physics.closest(this, resources.getChildren()) as Resource;
-
-      const { x: closestX, y: closestY } = closest.getCenter();
-      const { x, y } = this.getCenter();
-      const distance = Phaser.Math.Distance.Between(x, y, closestX, closestY);
-
-      if (distance > this.attackRange) {
-        return;
+    Object.keys(keyActions).forEach((key) => {
+      if (this.keyboard[key].isDown) {
+        keyActions[key](this.scene, this[`press${key}`].bind(this), this.getAttackSpeedMs());
       }
-      const resourceReward = closest.decreaseHp(this.attackDamage);
-
-      (this.scene as InGameScene).resourceStates[closest.name].increase(resourceReward);
-    };
-    this.scene.input.keyboard.on('keydown-Q', () => {
-      throttle2(this.scene, pressQ, this.getAttackSpeedMs());
     });
-    return this;
   }
-  attackW() {}
-  shoot() {
-    const fn = () => {
-      if ((this.scene as InGameScene).enemies?.getChildren().length === 0) {
-        return;
-      }
-      const closestEnemy = this.scene.physics.closest(
-        this,
-        (this.scene as InGameScene).enemies.getChildren(),
-      );
-      const distance = Phaser.Math.Distance.Between(
-        this.x,
-        this.y,
-        (closestEnemy as Enemy).x,
-        (closestEnemy as Enemy).y,
-      );
-      if (distance > this.attackRange) {
-        return;
-      }
-      new Beam(this.scene, {
-        shooter: this,
-        target: closestEnemy,
-      })
-        .setX(this.x)
-        .setY(this.y);
-    };
-    throttle(this.scene, fn, this.getAttackSpeedMs());
+  pressQ() {
+    this.getherResource();
+  }
+  pressW() {
+    this.shootBeamToClosestEnemy();
+  }
+  getherResource() {
+    const { resources } = this.scene as InGameScene;
+    const closest = this.scene.physics.closest(this, resources.getChildren()) as Resource;
+
+    const { x: closestX, y: closestY } = closest.getCenter();
+    const { x, y } = this.getCenter();
+    const distance = Phaser.Math.Distance.Between(x, y, closestX, closestY);
+
+    if (distance > this.attackRange) {
+      return;
+    }
+    const resourceReward = closest.decreaseHp(this.attackDamage);
+
+    (this.scene as InGameScene).resourceStates[closest.name].increase(resourceReward);
+  }
+  shootBeamToClosestEnemy() {
+    if ((this.scene as InGameScene).enemies?.getChildren().length === 0) {
+      return;
+    }
+    const closestEnemy = this.scene.physics.closest(
+      this,
+      (this.scene as InGameScene).enemies.getChildren(),
+    );
+    const distance = Phaser.Math.Distance.Between(
+      this.x,
+      this.y,
+      (closestEnemy as Enemy).x,
+      (closestEnemy as Enemy).y,
+    );
+    if (distance > this.attackRange) {
+      return;
+    }
+    new Beam(this.scene, {
+      shooter: this,
+      target: closestEnemy,
+    })
+      .setX(this.x)
+      .setY(this.y);
   }
   getAttackSpeedMs() {
     return (250 - this.attackSpeed) * 10;
   }
-  getMoveSpeed() {
-    return this.moveSpeed;
-  }
   playerMoveWithKeyboard() {
     const { left, right, up, down } = (this.scene as InGameScene).cursors;
-    const speed = this.getMoveSpeed();
+    const speed = this.moveSpeed;
     // const xSpeed = left.isDown ? -speed : right.isDown ? speed : 0;
     // const ySpeed = up.isDown ? -speed : down.isDown ? speed : 0;
     let xSpeed = 0;

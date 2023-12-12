@@ -9,6 +9,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   hp: number;
   spriteKey: any;
   static damage: number = 10;
+  static attackRange: number = 50;
   static attackSpeed: number = 2000;
   static sightRange: number = 100;
   isAttacking: boolean = false;
@@ -27,7 +28,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setDepth(999).setBodySize(10, 15).setCollideWorldBounds(true);
     createMoveAnim(this, spriteKey);
     scene.time.addEvent({
-      delay: 500, // 1000ms = 1s
+      delay: Phaser.Math.Between(500, 1000), // ms
       callback: this.move, // 호출할 함수
       callbackScope: this, // 함수의 'this' 값
       loop: true, // 이 이벤트를 계속 반복할 것인지
@@ -47,8 +48,11 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       return;
     }
     const player = (this.scene as InGameScene).player;
+    if (player.isDestroyed()) {
+      return;
+    }
     const distance = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
-    if (distance < 10) {
+    if (distance < Enemy.attackRange) {
       this.setVelocity(0);
       return;
     }
@@ -75,4 +79,5 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       this.destroy();
     }
   }
+  // TODO: 원거리 공격 추가하기
 }
