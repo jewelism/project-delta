@@ -45,9 +45,9 @@ export class InGameScene extends Phaser.Scene {
       startFrame: 27,
     });
 
-    this.load.spritesheet('alex', 'phaser/players/spr_alex.png', {
+    this.load.spritesheet('pixel_animals', 'phaser/chars/pixel_animals.png', {
       frameWidth: 16,
-      frameHeight: 32,
+      frameHeight: 16,
     });
     this.load.spritesheet('skel', 'phaser/chars/Skel_walk_v2.png', {
       frameWidth: 16,
@@ -73,7 +73,7 @@ export class InGameScene extends Phaser.Scene {
     const { map, playerSpawnPoints, monsterSpawnPoints } = this.createMap(this);
 
     this.player = new Player(this, {
-      spriteKey: 'alex',
+      frameNo: 2,
       x: playerSpawnPoints.x,
       y: playerSpawnPoints.y,
     });

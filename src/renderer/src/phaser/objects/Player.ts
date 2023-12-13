@@ -3,12 +3,7 @@ import { Resource } from '@/phaser/objects/Resource';
 import { Beam } from '@/phaser/objects/weapons/Beam';
 import { InGameScene } from '@/phaser/scenes/InGameScene';
 import { EaseText } from '@/phaser/ui/EaseText';
-import {
-  createThrottleFn,
-  createMoveAnim,
-  playMoveAnim,
-  createFlashFn,
-} from '@/phaser/utils/helper';
+import { createThrottleFn, createFlashFn } from '@/phaser/utils/helper';
 
 const keyActions = {
   Q: createThrottleFn(),
@@ -21,36 +16,45 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   attackSpeed: number = 100;
   attackDamage: number = 100;
   defence: number = 100;
-  // moveSpeed: number = 75;
-  moveSpeed: number = 200;
+  moveSpeed: number = 75;
+  // moveSpeed: number = 200;
   attackRangeCircle: Phaser.GameObjects.Graphics;
   spriteKey: string;
   maxHp: number = 100;
   hp: number = this.maxHp;
   keyboard: Record<string, Phaser.Input.Keyboard.Key> = {};
+  direction: string;
+  frameNo: any;
 
-  constructor(scene: Phaser.Scene, { x, y, spriteKey }) {
-    super(scene, x, y, spriteKey);
+  constructor(scene: Phaser.Scene, { x, y, frameNo }) {
+    super(scene, x, y, 'pixel_animals', frameNo);
 
-    this.spriteKey = spriteKey;
+    this.frameNo = frameNo;
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
     scene.physics.world.enableBody(this);
     this.setOrigin(0, 0).setBodySize(12, 18).setDepth(9).setCollideWorldBounds(true);
-    createMoveAnim(this, spriteKey);
 
-    ['Q', 'W', 'E', 'R'].forEach((key) => {
+    ['Q', 'W'].forEach((key) => {
       this.keyboard[key] = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[key]);
+    });
+
+    this.anims.create({
+      key: `pixel_animals_move${frameNo}`,
+      frames: this.anims.generateFrameNames('pixel_animals', {
+        // prefix: 'pixel_animals_walk_',
+        frames: [frameNo, frameNo + 1],
+      }),
+      frameRate: 12,
+      repeat: -1,
     });
   }
   isDestroyed() {
     return !this.active;
   }
   preUpdate() {
-    playMoveAnim(this, this.spriteKey);
     this.playerMoveWithKeyboard();
-    // this.shoot();
     Object.keys(keyActions).forEach((key) => {
       if (this.keyboard[key].isDown) {
         keyActions[key](this.scene, this[`press${key}`].bind(this), this.getAttackSpeedMs());
@@ -108,25 +112,22 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   playerMoveWithKeyboard() {
     const { left, right, up, down } = (this.scene as InGameScene).cursors;
     const speed = this.moveSpeed;
-    // const xSpeed = left.isDown ? -speed : right.isDown ? speed : 0;
-    // const ySpeed = up.isDown ? -speed : down.isDown ? speed : 0;
-    let xSpeed = 0;
-    let ySpeed = 0;
-    if (left.isDown) {
-      xSpeed = -speed;
-    } else if (right.isDown) {
-      xSpeed = speed;
-    } else if (up.isDown) {
-      ySpeed = -speed;
-    } else if (down.isDown) {
-      ySpeed = speed;
-    }
+    const xSpeed = left.isDown ? -speed : right.isDown ? speed : 0;
+    const ySpeed = up.isDown ? -speed : down.isDown ? speed : 0;
     if (xSpeed === 0 && ySpeed === 0) {
       this.setVelocity(0);
       return;
     }
     this.emit('moved');
     this.setVelocity(xSpeed, ySpeed);
+    this.anims.play(`pixel_animals_move${this.frameNo}`, true);
+    if (xSpeed < 0) {
+      this.setFlipX(false);
+      this.direction = 'left';
+    } else if (xSpeed > 0) {
+      this.setFlipX(true);
+      this.direction = 'right';
+    }
   }
   getUpgradeCost(id: string) {
     if (this[id] >= 200) {

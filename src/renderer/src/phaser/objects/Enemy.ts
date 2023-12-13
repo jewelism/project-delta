@@ -15,7 +15,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   isAttacking: boolean = false;
 
   constructor(scene, { x, y, hp, spriteKey }) {
-    super(scene, x, y, spriteKey);
+    super(scene, x, y, spriteKey, 12);
 
     this.maxHp = hp;
     this.hp = hp;
@@ -26,7 +26,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
 
     this.setDepth(999).setBodySize(10, 15).setCollideWorldBounds(true);
-    createMoveAnim(this, spriteKey);
+    createMoveAnim(this, spriteKey, {
+      leftFrames: Array.from({ length: 4 }, (_, i) => i + 4),
+      rightFrames: Array.from({ length: 4 }, (_, i) => i + 12),
+    });
     scene.time.addEvent({
       delay: Phaser.Math.Between(500, 1000), // ms
       callback: this.move, // 호출할 함수

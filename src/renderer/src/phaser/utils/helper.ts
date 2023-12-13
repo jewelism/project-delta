@@ -42,33 +42,28 @@ export const playMoveAnim = (char, spriteKey: string) => {
     char.direction = 'left';
   } else if (char.body.velocity.x > 0) {
     char.anims.play(`${spriteKey}-right`, true);
-    char.directionAngle = 'right';
-  } else if (char.body.velocity.y < 0) {
-    char.anims.play(`${spriteKey}-up`, true);
-    char.directionAngle = 'up';
-  } else if (char.body.velocity.y > 0) {
-    char.anims.play(`${spriteKey}-down`, true);
-    char.directionAngle = 'down';
+    char.direction = 'right';
   }
 };
 
-export const createMoveAnim = (char, spriteKey: string) => {
-  char.anims.create({
-    key: `${spriteKey}-idle`,
-    frames: [{ key: spriteKey, frame: 0 }],
-  });
+export const createMoveAnim = (
+  char,
+  spriteKey: string,
+  {
+    leftFrames = Array.from({ length: 4 }, (_, i) => i + 4),
+    rightFrames = Array.from({ length: 4 }, (_, i) => i + 8),
+  },
+) => {
   [
-    { key: `${spriteKey}-down`, frames: Array.from({ length: 4 }, (_, i) => i) },
-    { key: `${spriteKey}-left`, frames: Array.from({ length: 4 }, (_, i) => i + 4) },
-    { key: `${spriteKey}-right`, frames: Array.from({ length: 4 }, (_, i) => i + 8) },
-    { key: `${spriteKey}-up`, frames: Array.from({ length: 4 }, (_, i) => i + 12) },
+    { key: `${spriteKey}-left`, frames: leftFrames },
+    { key: `${spriteKey}-right`, frames: rightFrames },
   ].forEach(({ key, frames }) => {
     char.anims.create({
       key,
       frames: char.anims.generateFrameNames(spriteKey, {
         frames,
       }),
-      frameRate: 24,
+      // frameRate: 6,
     });
   });
   return char;
