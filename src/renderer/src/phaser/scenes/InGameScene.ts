@@ -82,7 +82,6 @@ export class InGameScene extends Phaser.Scene {
     this.scene.launch('InGameUIScene');
 
     this.createEnemy(monsterSpawnPoints);
-    // this.createMinimap(this.player);
 
     this.cameras.main
       .setBounds(0, 0, map.heightInPixels, map.widthInPixels)
@@ -130,26 +129,6 @@ export class InGameScene extends Phaser.Scene {
     scene.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
     return { map, playerSpawnPoints, monsterSpawnPoints };
-  }
-  createMinimap(player: Animal) {
-    const graphics = this.add
-      .graphics({ fillStyle: { color: 0x84b4c8 } })
-      .fillCircle(0, 0, 5)
-      .setScale(20);
-    this.playerIndicator = this.add.container(player.x, player.y, graphics);
-    const minimapSize = 300;
-    const y = Number(this.game.config.height) - minimapSize;
-
-    this.cameras
-      .add(0, y, minimapSize, minimapSize)
-      .setZoom(0.05)
-      .setOrigin(0, 0.5)
-      .ignore(player)
-      .ignore(this.enemies)
-      .setAlpha(0.7);
-    player.on('moved', () => {
-      this.playerIndicator.setPosition(player.x, player.y);
-    });
   }
   createEnemy(monsterSpawnPoints: Phaser.Types.Tilemaps.TiledObject[]) {
     monsterSpawnPoints.forEach(({ x, y }) => {
