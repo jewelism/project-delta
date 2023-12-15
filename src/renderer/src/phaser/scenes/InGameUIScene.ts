@@ -154,7 +154,7 @@ export class InGameUIScene extends Phaser.Scene {
   }
   canUpgrade(id: string) {
     const inGameScene = this.scene.get('InGameScene') as InGameScene;
-    if (inGameScene.player[id] >= getUpgradeMax(id)) {
+    if (inGameScene.player.body[id] >= getUpgradeMax(id)) {
       return { canUpgrade: false, cost: { tree: 0, rock: 0, gold: 0 } };
     }
     const { tree, rock, gold } = inGameScene.player.getUpgradeCost(id);
@@ -174,7 +174,7 @@ export class InGameUIScene extends Phaser.Scene {
     //   return;
     // }
     inGameScene.resourceStates.decreaseByUpgrade(cost);
-    inGameScene.player[id] += 1;
+    inGameScene.player.body[id] += 1;
     this.updatePlayerStateUI(id);
     this.buttonElements.forEach((element) => {
       const { name } = element;
@@ -198,6 +198,6 @@ export class InGameUIScene extends Phaser.Scene {
   }
   updatePlayerStateUI(id: string) {
     const inGameScene = this.scene.get('InGameScene') as InGameScene;
-    this.stateElement.getChildByID(id).textContent = inGameScene.player[id];
+    this.stateElement.getChildByID(id).textContent = inGameScene.player.body[id];
   }
 }

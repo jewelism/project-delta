@@ -14,8 +14,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   static sightRange: number = 100;
   isAttacking: boolean = false;
 
-  constructor(scene, { x, y, hp, spriteKey }) {
-    super(scene, x, y, spriteKey, 12);
+  constructor(scene, { x, y, hp, spriteKey, frameNo }) {
+    super(scene, x, y, spriteKey, frameNo);
 
     this.maxHp = hp;
     this.hp = hp;
@@ -54,7 +54,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     if (player.isDestroyed()) {
       return;
     }
-    const distance = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
+    const distance = Phaser.Math.Distance.Between(this.x, this.y, player.body.x, player.body.y);
     if (distance < Enemy.attackRange) {
       this.setVelocity(0);
       return;

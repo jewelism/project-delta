@@ -13,14 +13,13 @@ export class InGameScene extends Phaser.Scene {
   projectiles: Phaser.Physics.Arcade.Group;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   resources: Phaser.Physics.Arcade.Group;
-  playerIndicator: Phaser.GameObjects.Container;
   resourceStates: {
     tree: ResourceState;
     rock: ResourceState;
     gold: ResourceState;
     decreaseByUpgrade: ({ tree, rock, gold }) => void;
   };
-  player: Animal;
+  player: Player;
 
   constructor() {
     super('InGameScene');
@@ -72,32 +71,32 @@ export class InGameScene extends Phaser.Scene {
 
     const { map, playerSpawnPoints, monsterSpawnPoints } = this.createMap(this);
 
-    this.player = new Animal(this, {
+    this.player = new Player(this, {
       x: playerSpawnPoints.x,
       y: playerSpawnPoints.y,
-      hp: 100,
+      hp: 200,
       spriteKey: 'pixel_animals',
       frameNo: 0,
     });
+    // this.player.body.body.setVelocity(100, 100);
     this.scene.launch('InGameUIScene');
-
     this.createEnemy(monsterSpawnPoints);
 
     this.cameras.main
       .setBounds(0, 0, map.heightInPixels, map.widthInPixels)
-      .startFollow(this.player, false)
-      .ignore(this.playerIndicator)
+      .startFollow(this.player.body, false)
       .setZoom(GAME.ZOOM);
 
-    this.physics.add.collider(this.resources, this.player);
+    this.physics.add.collider(this.resources, this.player.body);
+    this.physics.add.collider(this.resources, this.enemies);
 
     this.physics.add.collider(this.enemies, this.enemies);
-    this.physics.add.collider(this.enemies, this.player, (player: Player, enemy: Enemy) => {
+    this.physics.add.collider(this.enemies, this.player.body, (player: any, enemy: Enemy) => {
       if (enemy.isAttacking) {
         return;
       }
       enemy.isAttacking = true;
-      player.decreaseHp(Enemy.damage);
+      (player as Animal).decreaseHp(Enemy.damage);
       this.time.addEvent({
         delay: Enemy.attackSpeed,
         callback: () => {
@@ -135,7 +134,13 @@ export class InGameScene extends Phaser.Scene {
       const tempEnemies = Array.from(
         { length: 5 },
         (_, index) =>
-          new Enemy(this, { x: x + index * 10, y: y + index * 10, hp: 300, spriteKey: 'skel' }),
+          new Enemy(this, {
+            x: x + index * 10,
+            y: y + index * 10,
+            hp: 300,
+            spriteKey: 'pixel_animals',
+            frameNo: 38,
+          }),
       );
       this.enemies.addMultiple(tempEnemies);
     });

@@ -1,63 +1,44 @@
+import { Animal } from '@/phaser/objects/Animal';
 import { Enemy } from '@/phaser/objects/Enemy';
 import { Resource } from '@/phaser/objects/Resource';
 import { Beam } from '@/phaser/objects/weapons/Beam';
 import { InGameScene } from '@/phaser/scenes/InGameScene';
-import { EaseText } from '@/phaser/ui/EaseText';
-import { createThrottleFn, createFlashFn } from '@/phaser/utils/helper';
+import { createThrottleFn } from '@/phaser/utils/helper';
 
 const keyActions = {
   Q: createThrottleFn(),
   W: createThrottleFn(),
 };
 
-export class Player extends Phaser.Physics.Arcade.Sprite {
-  // attackRange: number = 50;
-  attackRange: number = 500;
-  attackSpeed: number = 100;
-  attackDamage: number = 100;
-  defence: number = 100;
-  moveSpeed: number = 75;
-  // moveSpeed: number = 200;
-  attackRangeCircle: Phaser.GameObjects.Graphics;
-  spriteKey: string;
-  maxHp: number = 100;
-  hp: number = this.maxHp;
+export class Player {
+  body: Animal;
   keyboard: Record<string, Phaser.Input.Keyboard.Key> = {};
-  direction: string;
-  frameNo: any;
 
-  constructor(scene: Phaser.Scene, { x, y, frameNo }) {
-    super(scene, x, y, 'pixel_animals', frameNo);
+  constructor(scene: Phaser.Scene, { x, y, hp, spriteKey, frameNo }) {
+    this.body = new Animal(scene, { x, y, hp, spriteKey, frameNo });
 
-    this.frameNo = frameNo;
+    this.body.preUpdate = this.preUpdate.bind(this);
 
-    scene.add.existing(this);
-    scene.physics.add.existing(this);
-    scene.physics.world.enableBody(this);
-    this.setOrigin(0, 0).setBodySize(12, 18).setDepth(9).setCollideWorldBounds(true);
+    // this.sprite.setBodySize(12, 12).setDepth(9).setCollideWorldBounds(true);
 
     ['Q', 'W'].forEach((key) => {
-      this.keyboard[key] = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes[key]);
-    });
-
-    this.anims.create({
-      key: `pixel_animals_move${frameNo}`,
-      frames: this.anims.generateFrameNames('pixel_animals', {
-        // prefix: 'pixel_animals_walk_',
-        frames: [frameNo, frameNo + 1],
-      }),
-      frameRate: 12,
-      repeat: -1,
+      this.keyboard[key] = this.body.scene.input.keyboard.addKey(
+        Phaser.Input.Keyboard.KeyCodes[key],
+      );
     });
   }
   isDestroyed() {
-    return !this.active;
+    return !this.body.active || this.body.hp <= 0;
   }
   preUpdate() {
-    this.playerMoveWithKeyboard();
+    this.playerVelocityMoveWithKeyboard();
     Object.keys(keyActions).forEach((key) => {
       if (this.keyboard[key].isDown) {
-        keyActions[key](this.scene, this[`press${key}`].bind(this), this.getAttackSpeedMs());
+        keyActions[key](
+          this.body.scene,
+          this[`press${key}`].bind(this),
+          this.body.getAttackSpeedMs(),
+        );
       }
     });
   }
@@ -68,82 +49,59 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.shootBeamToClosestEnemy();
   }
   getherResource() {
-    const { resources } = this.scene as InGameScene;
-    const closest = this.scene.physics.closest(this, resources.getChildren()) as Resource;
+    const { resources } = this.body.scene as InGameScene;
+    const closest = this.body.scene.physics.closest(this.body, resources.getChildren()) as Resource;
 
     const { x: closestX, y: closestY } = closest.getCenter();
-    const { x, y } = this.getCenter();
+    const { x, y } = this.body.sprite.getCenter();
     const distance = Phaser.Math.Distance.Between(x, y, closestX, closestY);
 
-    if (distance > this.attackRange) {
+    if (distance > this.body.attackRange) {
       return;
     }
-    const resourceReward = closest.decreaseHp(this.attackDamage);
+    const resourceReward = closest.decreaseHp(this.body.attackDamage);
 
-    (this.scene as InGameScene).resourceStates[closest.name].increase(resourceReward);
+    (this.body.scene as InGameScene).resourceStates[closest.name].increase(resourceReward);
   }
   shootBeamToClosestEnemy() {
-    if ((this.scene as InGameScene).enemies?.getChildren().length === 0) {
+    if ((this.body.scene as InGameScene).enemies?.getChildren().length === 0) {
       return;
     }
-    const closestEnemy = this.scene.physics.closest(
-      this,
-      (this.scene as InGameScene).enemies.getChildren(),
+    const closestEnemy = this.body.scene.physics.closest(
+      this.body,
+      (this.body.scene as InGameScene).enemies.getChildren(),
     );
     const distance = Phaser.Math.Distance.Between(
-      this.x,
-      this.y,
+      this.body.x,
+      this.body.y,
       (closestEnemy as Enemy).x,
       (closestEnemy as Enemy).y,
     );
-    if (distance > this.attackRange) {
+    if (distance > this.body.attackRange) {
       return;
     }
-    new Beam(this.scene, {
-      shooter: this,
+    new Beam(this.body.scene, {
+      shooter: this.body,
       target: closestEnemy,
     })
-      .setX(this.x)
-      .setY(this.y);
+      .setX(this.body.x)
+      .setY(this.body.y);
   }
-  getAttackSpeedMs() {
-    return (250 - this.attackSpeed) * 10;
-  }
-  playerMoveWithKeyboard() {
-    const { left, right, up, down } = (this.scene as InGameScene).cursors;
-    const speed = this.moveSpeed;
+  playerVelocityMoveWithKeyboard() {
+    const { left, right, up, down } = (this.body.scene as InGameScene).cursors;
+    const speed = this.body.moveSpeed;
     const xSpeed = left.isDown ? -speed : right.isDown ? speed : 0;
     const ySpeed = up.isDown ? -speed : down.isDown ? speed : 0;
+    (this.body.body as any).setVelocity(xSpeed, ySpeed);
     if (xSpeed === 0 && ySpeed === 0) {
-      this.setVelocity(0);
       return;
     }
-    this.emit('moved');
-    this.setVelocity(xSpeed, ySpeed);
-    this.anims.play(`pixel_animals_move${this.frameNo}`, true);
-    if (xSpeed < 0) {
-      this.setFlipX(false);
-      this.direction = 'left';
-    } else if (xSpeed > 0) {
-      this.setFlipX(true);
-      this.direction = 'right';
-    }
+    this.body.sprite.anims.play(`pixel_animals_move${this.body.frameNo}`, true);
   }
   getUpgradeCost(id: string) {
-    if (this[id] >= 200) {
-      return { rock: this[id] * 20, tree: this[id] * 20, gold: this[id] * 2 };
+    if (this.body[id] >= 200) {
+      return { rock: this.body[id] * 20, tree: this.body[id] * 20, gold: this.body[id] * 2 };
     }
-    return { rock: this[id] * 5, tree: this[id] * 5, gold: 0 };
-  }
-  decreaseHp(amount: number) {
-    if (this.isDestroyed()) {
-      return;
-    }
-    this.hp -= amount;
-    createFlashFn()(this);
-    new EaseText(this.scene, { x: this.x, y: this.y, text: `${amount}`, color: '#ff0000' });
-    if (this.hp <= 0) {
-      this.destroy();
-    }
+    return { rock: this.body[id] * 5, tree: this.body[id] * 5, gold: 0 };
   }
 }
