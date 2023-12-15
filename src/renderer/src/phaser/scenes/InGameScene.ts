@@ -1,3 +1,4 @@
+import { Animal } from '@/phaser/objects/Animal';
 import { Enemy } from '@/phaser/objects/Enemy';
 import { Player } from '@/phaser/objects/Player';
 import { ResourceState } from '@/phaser/ui/ResourceState';
@@ -11,7 +12,6 @@ export class InGameScene extends Phaser.Scene {
   timer: Phaser.Time.TimerEvent;
   projectiles: Phaser.Physics.Arcade.Group;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-  player: Player;
   resources: Phaser.Physics.Arcade.Group;
   playerIndicator: Phaser.GameObjects.Container;
   resourceStates: {
@@ -20,6 +20,7 @@ export class InGameScene extends Phaser.Scene {
     gold: ResourceState;
     decreaseByUpgrade: ({ tree, rock, gold }) => void;
   };
+  player: Animal;
 
   constructor() {
     super('InGameScene');
@@ -44,7 +45,6 @@ export class InGameScene extends Phaser.Scene {
       frameHeight: 16,
       startFrame: 27,
     });
-
     this.load.spritesheet('pixel_animals', 'phaser/chars/pixel_animals.png', {
       frameWidth: 16,
       frameHeight: 16,
@@ -72,15 +72,17 @@ export class InGameScene extends Phaser.Scene {
 
     const { map, playerSpawnPoints, monsterSpawnPoints } = this.createMap(this);
 
-    this.player = new Player(this, {
-      frameNo: 2,
+    this.player = new Animal(this, {
       x: playerSpawnPoints.x,
       y: playerSpawnPoints.y,
+      hp: 100,
+      spriteKey: 'pixel_animals',
+      frameNo: 0,
     });
     this.scene.launch('InGameUIScene');
 
     this.createEnemy(monsterSpawnPoints);
-    this.createMinimap(this.player);
+    // this.createMinimap(this.player);
 
     this.cameras.main
       .setBounds(0, 0, map.heightInPixels, map.widthInPixels)
@@ -129,7 +131,7 @@ export class InGameScene extends Phaser.Scene {
 
     return { map, playerSpawnPoints, monsterSpawnPoints };
   }
-  createMinimap(player: Player) {
+  createMinimap(player: Animal) {
     const graphics = this.add
       .graphics({ fillStyle: { color: 0x84b4c8 } })
       .fillCircle(0, 0, 5)

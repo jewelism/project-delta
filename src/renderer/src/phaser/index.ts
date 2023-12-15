@@ -6,6 +6,11 @@ import { InGameScene } from '@/phaser/scenes/InGameScene';
 import { InGameUIScene } from '@/phaser/scenes/InGameUIScene';
 
 const config: Phaser.Types.Core.GameConfig = {
+  scene: [
+    // StartScene, MultiplayLobbyScene,
+    InGameScene,
+    InGameUIScene,
+  ],
   title: 'project alpha',
   url: 'jewelism.github.io',
   type: Phaser.WEBGL,
@@ -38,11 +43,7 @@ const config: Phaser.Types.Core.GameConfig = {
   dom: {
     createContainer: true,
   },
-  scene: [
-    // StartScene, MultiplayLobbyScene,
-    InGameScene,
-    InGameUIScene,
-  ],
+
   // backgroundColor: '#222',
   // fps: {
   //   target: 10,
