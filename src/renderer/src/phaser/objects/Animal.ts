@@ -27,7 +27,7 @@ export class Animal extends Phaser.GameObjects.Container {
 
     this.setSize(this.sprite.width, this.sprite.height);
 
-    this.hpBar = new HpBar(scene, { maxHp: this.maxHp, owner: this });
+    this.hpBar = new HpBar(scene, { maxHp: this.maxHp });
     this.sprite.anims.create({
       key: `${spriteKey}_move${frameNo}`,
       frames: this.sprite.anims.generateFrameNames(spriteKey, {
