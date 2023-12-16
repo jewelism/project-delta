@@ -1,6 +1,7 @@
 import { Animal } from '@/phaser/objects/Animal';
 import { Enemy } from '@/phaser/objects/Enemy';
 import { Player } from '@/phaser/objects/Player';
+import { InGameUIScene } from '@/phaser/scenes/InGameUIScene';
 import { ResourceState } from '@/phaser/ui/ResourceState';
 import { generateResource } from '@/phaser/utils/helper';
 
@@ -130,6 +131,10 @@ export class InGameScene extends Phaser.Scene {
     return { map, playerSpawnPoints, monsterSpawnPoints };
   }
   createEnemy(monsterSpawnPoints: Phaser.Types.Tilemaps.TiledObject[]) {
+    const inGameUIScene = this.scene.get('InGameUIScene') as InGameUIScene;
+    inGameUIScene.createTimer(0.1, () => {
+      // TODO: 몬스터 스폰
+    });
     monsterSpawnPoints.forEach(({ x, y }) => {
       const tempEnemies = Array.from(
         { length: 5 },
