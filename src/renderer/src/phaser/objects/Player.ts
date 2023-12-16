@@ -93,6 +93,7 @@ export class Player {
     if (xSpeed === 0 && ySpeed === 0) {
       return;
     }
+    this.body.flipSpriteByDirection();
     this.body.sprite.anims.play(`pixel_animals_move${this.body.frameNo}`, true);
   }
   getUpgradeCost(id: string) {

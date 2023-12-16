@@ -45,6 +45,7 @@ export class Enemy {
     }
     if (distance < Enemy.sightRange || this.body.isDamaged()) {
       this.body.scene.physics.moveToObject(this.body, player.body, this.body.moveSpeed);
+      this.body.flipSpriteByDirection();
       return;
     }
     this.randomMove();
@@ -54,6 +55,7 @@ export class Enemy {
     const randomY = Phaser.Math.Between(-100, 100);
     const randomPoint = new Phaser.Math.Vector2(this.body.x + randomX, this.body.y + randomY);
     this.body.scene.physics.moveToObject(this.body, randomPoint, this.body.moveSpeed);
+    this.body.flipSpriteByDirection();
   }
   decreaseHp(amount: number) {
     if (this.body.isDestroyed()) {

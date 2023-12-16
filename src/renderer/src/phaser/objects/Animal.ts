@@ -3,7 +3,7 @@ import { HpBar } from '@/phaser/ui/HpBar';
 import { createFlashFn } from '@/phaser/utils/helper';
 
 export class Animal extends Phaser.GameObjects.Container {
-  static MOVE_SPEED_RANK = 100;
+  static MOVE_SPEED_RANK = 25;
   attackRange: number = 500;
   attackSpeed: number = 100;
   attackDamage: number = 100;
@@ -61,5 +61,12 @@ export class Animal extends Phaser.GameObjects.Container {
     if (this.hp <= 0) {
       this.destroy();
     }
+  }
+  flipSpriteByDirection() {
+    if (this.body.velocity.x > 0) {
+      this.sprite.setFlipX(true);
+      return;
+    }
+    this.sprite.setFlipX(false);
   }
 }
