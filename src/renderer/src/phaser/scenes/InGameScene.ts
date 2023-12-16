@@ -98,7 +98,7 @@ export class InGameScene extends Phaser.Scene {
       enemy.isAttacking = true;
       (player as Animal).decreaseHp(enemy.attackDamage);
       this.time.addEvent({
-        delay: enemy.attackSpeed,
+        delay: enemy.getAttackSpeedMs(),
         callback: () => {
           enemy.isAttacking = false;
         },

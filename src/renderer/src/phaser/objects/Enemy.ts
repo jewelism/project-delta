@@ -10,6 +10,7 @@ export class Enemy {
 
   constructor(scene, { x, y, hp, spriteKey, frameNo }) {
     this.body = new Animal(scene, { x, y, hp, spriteKey, frameNo });
+    this.body.attackRange = 50;
     this.body.preUpdate = this.preUpdate.bind(this);
 
     // this.body.sprite.setDepth(999).setBodySize(10, 15).setCollideWorldBounds(true);
@@ -52,7 +53,6 @@ export class Enemy {
     const randomX = Phaser.Math.Between(-100, 100);
     const randomY = Phaser.Math.Between(-100, 100);
     const randomPoint = new Phaser.Math.Vector2(this.body.x + randomX, this.body.y + randomY);
-    // TODO: not working
     this.body.scene.physics.moveToObject(this.body, randomPoint, this.body.moveSpeed);
   }
   decreaseHp(amount: number) {
