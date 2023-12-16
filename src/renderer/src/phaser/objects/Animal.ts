@@ -1,4 +1,5 @@
 import { EaseText } from '@/phaser/ui/EaseText';
+import { HpBar } from '@/phaser/ui/HpBar';
 import { createFlashFn } from '@/phaser/utils/helper';
 
 export class Animal extends Phaser.GameObjects.Container {
@@ -14,6 +15,7 @@ export class Animal extends Phaser.GameObjects.Container {
   frameNo: number;
   spriteKey: string;
   direction: string;
+  hpBar: HpBar;
 
   constructor(scene: Phaser.Scene, { x, y, hp, spriteKey, frameNo }) {
     super(scene, x, y);
@@ -25,10 +27,7 @@ export class Animal extends Phaser.GameObjects.Container {
 
     this.setSize(this.sprite.width, this.sprite.height);
 
-    const text = new Phaser.GameObjects.Text(scene, 0, 0, 'test', {
-      color: 'white',
-      fontSize: '10px',
-    });
+    this.hpBar = new HpBar(scene, { maxHp: this.maxHp, owner: this });
     this.sprite.anims.create({
       key: `${spriteKey}_move${frameNo}`,
       frames: this.sprite.anims.generateFrameNames(spriteKey, {
@@ -38,7 +37,7 @@ export class Animal extends Phaser.GameObjects.Container {
     });
     scene.physics.world.enable(this);
 
-    this.add([text, this.sprite]);
+    this.add([this.hpBar, this.sprite]);
     scene.add.existing(this);
   }
   preUpdate() {}
@@ -56,6 +55,7 @@ export class Animal extends Phaser.GameObjects.Container {
       return;
     }
     this.hp -= amount;
+    this.hpBar.updateHpBar(this.hp);
     createFlashFn()(this.sprite);
     new EaseText(this.scene, { x: this.x, y: this.y, text: `${amount}`, color: '#ff0000' });
     if (this.hp <= 0) {
