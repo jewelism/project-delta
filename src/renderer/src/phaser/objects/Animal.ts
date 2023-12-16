@@ -8,7 +8,7 @@ export class Animal extends Phaser.GameObjects.Container {
   attackSpeed: number = 100;
   attackDamage: number = 100;
   defence: number = 100;
-  moveSpeed: number = 75;
+  moveSpeed: number = 50;
   maxHp: number;
   hp: number = 100;
   sprite: Phaser.Physics.Arcade.Sprite;

@@ -16,10 +16,9 @@ export class Player {
 
   constructor(scene: Phaser.Scene, { x, y, hp, spriteKey, frameNo }) {
     this.body = new Animal(scene, { x, y, hp, spriteKey, frameNo });
-
+    this.body.moveSpeed = 70;
+    this.body.setDepth(999);
     this.body.preUpdate = this.preUpdate.bind(this);
-
-    // this.sprite.setBodySize(12, 12).setDepth(9).setCollideWorldBounds(true);
 
     ['Q', 'W'].forEach((key) => {
       this.keyboard[key] = this.body.scene.input.keyboard.addKey(
@@ -40,10 +39,10 @@ export class Player {
     });
   }
   pressQ() {
-    this.getherResource();
+    this.shootBeamToClosestEnemy();
   }
   pressW() {
-    this.shootBeamToClosestEnemy();
+    this.getherResource();
   }
   getherResource() {
     const { resources } = this.body.scene as InGameScene;
@@ -53,6 +52,8 @@ export class Player {
     const { x, y } = this.body.sprite.getCenter();
     const distance = Phaser.Math.Distance.Between(x, y, closestX, closestY);
 
+    console.log(distance, this.body.attackRange);
+    // TODO: 가까이 있는데 멀리있는 리소스가 선택되는 버그. 메커니즘 바꿔야함
     if (distance > this.body.attackRange) {
       return;
     }

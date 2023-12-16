@@ -11,6 +11,7 @@ export class Enemy {
   constructor(scene, { x, y, hp, spriteKey, frameNo }) {
     this.body = new Animal(scene, { x, y, hp, spriteKey, frameNo });
     this.body.attackRange = 50;
+    this.body.moveSpeed = 50;
     this.body.preUpdate = this.preUpdate.bind(this);
 
     // this.body.sprite.setDepth(999).setBodySize(10, 15).setCollideWorldBounds(true);
