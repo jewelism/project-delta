@@ -3,6 +3,7 @@ import { ResourceState } from '@/phaser/ui/ResourceState';
 import { IconButton } from '@/phaser/ui/IconButton';
 import { getUpgradeMax, updateUpgradeUIText } from '@/phaser/utils/helper';
 import { INIT_PLAYER_STATE_LIST } from '@/phaser/constants';
+import { convertSecondsToMinSec } from '@/phaser/utils';
 
 export class InGameUIScene extends Phaser.Scene {
   upgradeUI: Phaser.GameObjects.Container;
@@ -70,6 +71,7 @@ export class InGameUIScene extends Phaser.Scene {
     this.createOpenUpgradeUIButton(this);
     this.createUpgradeUI(this);
     this.createPlayerKeyButton(this);
+    this.createTimer();
   }
   createOpenUpgradeUIButton(scene: Phaser.Scene) {
     const onClick = (visible: boolean = !this.upgradeUI.visible) => {
@@ -107,6 +109,39 @@ export class InGameUIScene extends Phaser.Scene {
           onClick: null,
         }).setDepth(9999);
       });
+  }
+  createTimer() {
+    let remainingTime = 30 * 60;
+
+    const inGameScene = this.scene.get('InGameScene') as InGameScene;
+
+    let remainingTimeText = this.add
+      .text(this.cameras.main.centerX, 10, convertSecondsToMinSec(remainingTime), {
+        fontSize: '20px',
+        color: '#ffffff',
+        stroke: '#000000',
+        strokeThickness: 2,
+      })
+      .setOrigin(0.5, 0)
+      .setScrollFactor(0);
+
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        if (inGameScene.player.body.isDestroyed()) {
+          return;
+        }
+        if (remainingTime <= 0) {
+          return;
+        }
+        remainingTime--;
+        remainingTimeText.setText(convertSecondsToMinSec(remainingTime));
+        if (remainingTime === 0) {
+          // Do something when time is up
+        }
+      },
+      loop: true,
+    });
   }
   createUpgradeUI(scene: Phaser.Scene) {
     this.upgradeUI = scene.add.container(0, 0).setVisible(false);
