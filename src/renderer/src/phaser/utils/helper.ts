@@ -46,29 +46,6 @@ export const playMoveAnim = (char, spriteKey: string) => {
   }
 };
 
-export const createMoveAnim = (
-  char,
-  spriteKey: string,
-  {
-    leftFrames = Array.from({ length: 4 }, (_, i) => i + 4),
-    rightFrames = Array.from({ length: 4 }, (_, i) => i + 8),
-  },
-) => {
-  [
-    { key: `${spriteKey}-left`, frames: leftFrames },
-    { key: `${spriteKey}-right`, frames: rightFrames },
-  ].forEach(({ key, frames }) => {
-    char.anims.create({
-      key,
-      frames: char.anims.generateFrameNames(spriteKey, {
-        frames,
-      }),
-      // frameRate: 6,
-    });
-  });
-  return char;
-};
-
 export const getUpgradeMax = (id: string): number => {
   const max = {
     attackDamage: 500,

@@ -74,7 +74,7 @@ export class InGameScene extends Phaser.Scene {
     this.player = new Player(this, {
       x: playerSpawnPoints.x,
       y: playerSpawnPoints.y,
-      hp: 200,
+      hp: 1000,
       spriteKey: 'pixel_animals',
       frameNo: 0,
     });
@@ -91,14 +91,14 @@ export class InGameScene extends Phaser.Scene {
     this.physics.add.collider(this.resources, this.enemies);
 
     this.physics.add.collider(this.enemies, this.enemies);
-    this.physics.add.collider(this.enemies, this.player.body, (player: any, enemy: Enemy) => {
+    this.physics.add.collider(this.enemies, this.player.body, (player: any, enemy: any) => {
       if (enemy.isAttacking) {
         return;
       }
       enemy.isAttacking = true;
-      (player as Animal).decreaseHp(Enemy.damage);
+      (player as Animal).decreaseHp(enemy.attackDamage);
       this.time.addEvent({
-        delay: Enemy.attackSpeed,
+        delay: enemy.attackSpeed,
         callback: () => {
           enemy.isAttacking = false;
         },
@@ -140,7 +140,7 @@ export class InGameScene extends Phaser.Scene {
             hp: 300,
             spriteKey: 'pixel_animals',
             frameNo: 38,
-          }),
+          }).body,
       );
       this.enemies.addMultiple(tempEnemies);
     });

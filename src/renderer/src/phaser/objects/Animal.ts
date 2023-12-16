@@ -14,7 +14,6 @@ export class Animal extends Phaser.GameObjects.Container {
   frameNo: number;
   spriteKey: string;
   direction: string;
-  tween: Phaser.Tweens.Tween;
 
   constructor(scene: Phaser.Scene, { x, y, hp, spriteKey, frameNo }) {
     super(scene, x, y);
@@ -45,6 +44,9 @@ export class Animal extends Phaser.GameObjects.Container {
   preUpdate() {}
   isDestroyed() {
     return !this.active || this.hp <= 0;
+  }
+  isDamaged() {
+    return this.hp < this.maxHp;
   }
   getAttackSpeedMs() {
     return (250 - this.attackSpeed) * 10;

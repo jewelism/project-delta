@@ -27,9 +27,6 @@ export class Player {
       );
     });
   }
-  isDestroyed() {
-    return !this.body.active || this.body.hp <= 0;
-  }
   preUpdate() {
     this.playerVelocityMoveWithKeyboard();
     Object.keys(keyActions).forEach((key) => {
@@ -70,12 +67,12 @@ export class Player {
     const closestEnemy = this.body.scene.physics.closest(
       this.body,
       (this.body.scene as InGameScene).enemies.getChildren(),
-    );
+    ) as unknown as Enemy;
     const distance = Phaser.Math.Distance.Between(
       this.body.x,
       this.body.y,
-      (closestEnemy as Enemy).x,
-      (closestEnemy as Enemy).y,
+      closestEnemy.body.x,
+      closestEnemy.body.y,
     );
     if (distance > this.body.attackRange) {
       return;
