@@ -43,7 +43,7 @@ export class InGameUIScene extends Phaser.Scene {
     });
   }
   create() {
-    const x = Number(this.game.config.width) - 75;
+    const x = this.scale.gameSize.width;
     const inGameScene = this.scene.get('InGameScene') as InGameScene;
     inGameScene.resourceStates = {
       rock: new ResourceState(this, {
@@ -66,11 +66,6 @@ export class InGameUIScene extends Phaser.Scene {
         this.rock.decrease(rock);
         this.gold.decrease(gold);
       },
-      setXAll(x: number) {
-        this.tree.setXAll(x);
-        this.rock.setXAll(x);
-        this.gold.setXAll(x);
-      },
     };
 
     this.createOpenUpgradeUIButton(this);
@@ -85,8 +80,8 @@ export class InGameUIScene extends Phaser.Scene {
       .addKey(Phaser.Input.Keyboard.KeyCodes.ESC)
       .on('down', () => onClick(false));
     new IconButton(scene, {
-      x: Number(scene.game.config.width) - 50,
-      y: Number(scene.game.config.height) - 50,
+      x: this.scale.gameSize.width,
+      y: this.scale.gameSize.height,
       width: 50,
       height: 50,
       spriteKey: 'book1',
@@ -104,8 +99,8 @@ export class InGameUIScene extends Phaser.Scene {
       .reverse()
       .forEach(({ spriteKey, shortcutText }, index) => {
         new IconButton(scene, {
-          x: Number(scene.game.config.width) - 50 * (index + 2),
-          y: Number(scene.game.config.height) - 50,
+          x: this.scale.gameSize.width - 50 * (index + 1),
+          y: this.scale.gameSize.height,
           width: 50,
           height: 50,
           spriteKey,

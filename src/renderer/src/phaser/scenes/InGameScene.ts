@@ -19,7 +19,6 @@ export class InGameScene extends Phaser.Scene {
     rock: ResourceState;
     gold: ResourceState;
     decreaseByUpgrade: ({ tree, rock, gold }) => void;
-    setXAll(x: number): void;
   };
   player: Player;
 
@@ -90,8 +89,8 @@ export class InGameScene extends Phaser.Scene {
 
     this.cameras.main
       .setBounds(0, 0, map.heightInPixels, map.widthInPixels)
-      .startFollow(this.player.body, false)
-      .setZoom(GAME.ZOOM);
+      .startFollow(this.player.body, false);
+    // .setZoom(GAME.ZOOM);
 
     this.physics.add.collider(this.resources, this.player.body);
     this.physics.add.collider(this.resources, this.enemies);
