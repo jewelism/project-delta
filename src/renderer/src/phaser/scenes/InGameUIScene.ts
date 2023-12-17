@@ -66,6 +66,11 @@ export class InGameUIScene extends Phaser.Scene {
         this.rock.decrease(rock);
         this.gold.decrease(gold);
       },
+      setXAll(x: number) {
+        this.tree.setXAll(x);
+        this.rock.setXAll(x);
+        this.gold.setXAll(x);
+      },
     };
 
     this.createOpenUpgradeUIButton(this);
@@ -133,7 +138,6 @@ export class InGameUIScene extends Phaser.Scene {
         remainingTime--;
         remainingTimeText.setText(convertSecondsToMinSec(remainingTime));
         if (remainingTime < 0) {
-          console.log('타임업', remainingTime);
           callback();
           remainingTimeText.destroy();
           timer.destroy();

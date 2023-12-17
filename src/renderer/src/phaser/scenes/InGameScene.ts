@@ -19,6 +19,7 @@ export class InGameScene extends Phaser.Scene {
     rock: ResourceState;
     gold: ResourceState;
     decreaseByUpgrade: ({ tree, rock, gold }) => void;
+    setXAll(x: number): void;
   };
   player: Player;
 
@@ -31,6 +32,11 @@ export class InGameScene extends Phaser.Scene {
     this.load.image('rock', 'phaser/objects/rock31x29.png');
 
     this.load.spritesheet('tree', 'phaser/objects/tree45x45.png', {
+      frameWidth: 45,
+      frameHeight: 45,
+      startFrame: 0,
+    });
+    this.load.spritesheet('fire', 'phaser/objects/tree45x45.png', {
       frameWidth: 45,
       frameHeight: 45,
       startFrame: 0,
@@ -79,7 +85,6 @@ export class InGameScene extends Phaser.Scene {
       spriteKey: 'pixel_animals',
       frameNo: 0,
     });
-    // this.player.body.body.setVelocity(100, 100);
     this.scene.launch('InGameUIScene');
     this.createEnemy(monsterSpawnPoints);
 
@@ -133,61 +138,20 @@ export class InGameScene extends Phaser.Scene {
   createEnemy(monsterSpawnPoints: Phaser.Types.Tilemaps.TiledObject[]) {
     const inGameUIScene = this.scene.get('InGameUIScene') as InGameUIScene;
     inGameUIScene.createTimer(0.1, () => {
-      // TODO: 몬스터 스폰
-    });
-    monsterSpawnPoints.forEach(({ x, y }) => {
-      const tempEnemies = Array.from(
-        { length: 5 },
-        (_, index) =>
-          new Enemy(this, {
+      monsterSpawnPoints.forEach(({ x, y }) => {
+        const tempEnemies = Array.from({ length: 5 }, (_, index) => {
+          const enemy = new Enemy(this, {
             x: x + index * 10,
             y: y + index * 10,
             hp: 300,
             spriteKey: 'pixel_animals',
             frameNo: 38,
-          }).body,
-      );
-      this.enemies.addMultiple(tempEnemies);
+          }).body;
+          return enemy;
+        });
+        this.enemies.addMultiple(tempEnemies);
+      });
+      inGameUIScene.createTimer(0.1, () => {});
     });
-
-    //   const phaseData = getPhaseData();
-    //   let index = 0;
-    //   let count = 0;
-
-    //   this.timer = this.time.addEvent({
-    //     delay: 100 / GAME.speed,
-    //     callback: () => {
-    //       if (this.healthBar.value === 0) {
-    //         return;
-    //       }
-    //       const { phase, hp, spriteKey, frameNo } = phaseData[index];
-    //       const direction = Phaser.Math.RND.integerInRange(0, 3);
-    //       let x, y;
-    //       if (direction === 0) {
-    //         x = Phaser.Math.RND.integerInRange(0, this.cameras.main.worldView.right);
-    //         y = this.cameras.main.worldView.top - 50;
-    //       } else if (direction === 1) {
-    //         x = this.cameras.main.worldView.right + 50;
-    //         y = Phaser.Math.RND.integerInRange(0, this.cameras.main.worldView.bottom);
-    //       } else if (direction === 2) {
-    //         x = Phaser.Math.RND.integerInRange(0, this.cameras.main.worldView.right);
-    //         y = this.cameras.main.worldView.bottom + 50;
-    //       } else if (direction === 3) {
-    //         x = this.cameras.main.worldView.left - 50;
-    //         y = Phaser.Math.RND.integerInRange(0, this.cameras.main.worldView.bottom);
-    //       }
-
-    //       const pixelAnimal = new PixelAnimal(this, {
-    //         x,
-    //         y,
-    //         hp,
-    //         frameNo,
-    //       });
-    //       this.enemies.add(pixelAnimal);
-    //       count++;
-    //     },
-    //     loop: true,
-    //     callbackScope: this,
-    //   });
   }
 }

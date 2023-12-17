@@ -20,7 +20,7 @@ export class Player {
     this.body.setDepth(999);
     this.body.preUpdate = this.preUpdate.bind(this);
 
-    ['Q', 'W'].forEach((key) => {
+    ['Q', 'W', 'E'].forEach((key) => {
       this.keyboard[key] = this.body.scene.input.keyboard.addKey(
         Phaser.Input.Keyboard.KeyCodes[key],
       );
@@ -43,6 +43,26 @@ export class Player {
   }
   pressW() {
     this.getherResource();
+  }
+  pressE() {
+    this.fiya();
+  }
+  fiya() {
+    const particles = this.body.scene.add.particles(this.body.x, this.body.y, 'fire');
+
+    // const emitter = particles.createEmitter({
+    //   speed: { min: -100, max: 100 },
+    //   angle: { min: -85, max: -95 },
+    //   scale: { start: 1, end: 0 },
+    //   blendMode: 'ADD',
+    //   lifespan: 2000,
+    //   emitZone: {
+    //     type: 'random',
+    //     source: new Phaser.Geom.Circle(0, 0, 100),
+    //   },
+    // });
+
+    // 원하는 위치에 이터를 배치합니다.
   }
   getherResource() {
     const { resources } = this.body.scene as InGameScene;
