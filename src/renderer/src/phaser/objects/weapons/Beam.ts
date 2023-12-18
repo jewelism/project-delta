@@ -1,3 +1,4 @@
+import { GAME } from '@/phaser/constants';
 import { Enemy } from '@/phaser/objects/Enemy';
 import { getDirectionAngleBySpeed } from '@/phaser/utils/helper';
 
@@ -9,7 +10,9 @@ export class Beam extends Phaser.Physics.Arcade.Sprite {
     super(scene, shooter.x, shooter.y, 'beam_green');
 
     this.target = target;
-    this.setScale(0.5).setOrigin(0, 0).setDepth(999);
+    this.setScale(0.5 * GAME.scale)
+      .setOrigin(0, 0)
+      .setDepth(999);
 
     scene.add.existing(this);
     scene.physics.world.enableBody(this);

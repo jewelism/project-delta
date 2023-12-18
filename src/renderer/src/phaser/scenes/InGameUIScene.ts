@@ -116,7 +116,7 @@ export class InGameUIScene extends Phaser.Scene {
 
     const remainingTimeText = this.add
       .text(this.cameras.main.centerX, 10, convertSecondsToMinSec(remainingTime), {
-        fontSize: '20px',
+        fontSize: '30px',
         color: '#ffffff',
         stroke: '#000000',
         strokeThickness: 2,
