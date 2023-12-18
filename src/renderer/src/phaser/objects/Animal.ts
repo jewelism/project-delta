@@ -1,4 +1,3 @@
-import { GAME } from '@/phaser/constants';
 import { EaseText } from '@/phaser/ui/EaseText';
 import { HpBar } from '@/phaser/ui/HpBar';
 import { createFlashFn } from '@/phaser/utils/helper';
@@ -26,7 +25,7 @@ export class Animal extends Phaser.GameObjects.Container {
     this.frameNo = frameNo;
     this.spriteKey = spriteKey;
 
-    this.setSize(this.sprite.width, this.sprite.height).setScale(GAME.scale);
+    this.setSize(this.sprite.width, this.sprite.height);
 
     this.hpBar = new HpBar(scene, { maxHp: this.maxHp });
     this.sprite.anims.create({

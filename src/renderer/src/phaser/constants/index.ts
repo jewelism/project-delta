@@ -1,7 +1,3 @@
-export const GAME = {
-  scale: 2.5,
-};
-
 export const getUIStyle = () => {
   return {
     fontSize: '15px',

@@ -1,5 +1,3 @@
-import { GAME } from '@/phaser/constants';
-
 export class EaseText extends Phaser.GameObjects.Text {
   constructor(
     scene: Phaser.Scene,
@@ -14,7 +12,7 @@ export class EaseText extends Phaser.GameObjects.Text {
     });
 
     scene.add.existing(this);
-    this.setScale(GAME.scale).easeOut();
+    this.easeOut();
   }
   easeOut() {
     this.scene.tweens.add({

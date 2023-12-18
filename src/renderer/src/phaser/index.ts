@@ -34,9 +34,9 @@ const config: Phaser.Types.Core.GameConfig = {
   },
   physics: {
     default: 'arcade',
-    // arcade: {
-    //   debug: true,
-    // },
+    arcade: {
+      debug: true,
+    },
   },
   parent: 'body',
   render: { pixelArt: true, antialias: false },

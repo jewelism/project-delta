@@ -1,12 +1,11 @@
-import { GAME } from '@/phaser/constants';
 import { Resource } from '@/phaser/objects/Resource';
 import { resourceGapCheck } from '@/phaser/utils';
 
 const getRandomResource = (scene: Phaser.Scene, { x, y }) => {
   const hp = Phaser.Math.RND.pick(Array.from({ length: 10 }, (_, i) => (i + 10) * 100));
   return Phaser.Math.RND.pick([
-    () => new Resource(scene, { x, y, name: 'rock', hp }).setScale(0.6 * GAME.scale),
-    () => new Resource(scene, { x, y, name: 'tree', hp }).setScale(0.5 * GAME.scale),
+    () => new Resource(scene, { x, y, name: 'rock', hp }).setScale(0.6),
+    () => new Resource(scene, { x, y, name: 'tree', hp }).setScale(0.5),
   ])();
 };
 
