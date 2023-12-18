@@ -19,8 +19,8 @@ const config: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     // mode: Phaser.Scale.RESIZE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    // width: window.innerWidth,
-    // height: window.innerHeight,
+    width: window.innerWidth,
+    height: window.innerHeight,
     // width: Number(import.meta.env.RENDERER_VITE_WINDOW_WIDTH),
     // height: Number(import.meta.env.RENDERER_VITE_WINDOW_HEIGHT),
     // min: {

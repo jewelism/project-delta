@@ -43,7 +43,7 @@ export class InGameUIScene extends Phaser.Scene {
     });
   }
   create() {
-    const x = this.scale.gameSize.width;
+    const x = this.scale.gameSize.width - 75;
     const inGameScene = this.scene.get('InGameScene') as InGameScene;
     inGameScene.resourceStates = {
       rock: new ResourceState(this, {
@@ -80,8 +80,8 @@ export class InGameUIScene extends Phaser.Scene {
       .addKey(Phaser.Input.Keyboard.KeyCodes.ESC)
       .on('down', () => onClick(false));
     new IconButton(scene, {
-      x: this.scale.gameSize.width,
-      y: this.scale.gameSize.height,
+      x: this.scale.gameSize.width - 50,
+      y: this.scale.gameSize.height - 50,
       width: 50,
       height: 50,
       spriteKey: 'book1',
@@ -99,8 +99,8 @@ export class InGameUIScene extends Phaser.Scene {
       .reverse()
       .forEach(({ spriteKey, shortcutText }, index) => {
         new IconButton(scene, {
-          x: this.scale.gameSize.width - 50 * (index + 1),
-          y: this.scale.gameSize.height,
+          x: this.scale.gameSize.width - 50 * (index + 2),
+          y: this.scale.gameSize.height - 50,
           width: 50,
           height: 50,
           spriteKey,
@@ -115,7 +115,7 @@ export class InGameUIScene extends Phaser.Scene {
     const inGameScene = this.scene.get('InGameScene') as InGameScene;
 
     const remainingTimeText = this.add
-      .text(this.cameras.main.centerX, 10, convertSecondsToMinSec(remainingTime), {
+      .text(this.cameras.main.centerX, 30, convertSecondsToMinSec(remainingTime), {
         fontSize: '20px',
         color: '#ffffff',
         stroke: '#000000',
@@ -178,7 +178,7 @@ export class InGameUIScene extends Phaser.Scene {
 
     const uiWrap = scene.add
       .rectangle(0, 0, Number(scene.game.config.width), Number(scene.game.config.height))
-      .setOrigin(0, 0)
+      .setOrigin(0)
       .setScrollFactor(0)
       .setFillStyle(0x000000, 0.7);
 
@@ -222,7 +222,7 @@ export class InGameUIScene extends Phaser.Scene {
   }
   createPlayerStateUI(scene: Phaser.Scene) {
     this.stateElement = new Phaser.GameObjects.DOMElement(scene, 50, 50)
-      .setOrigin(0, 0)
+      .setOrigin(0)
       .createFromCache('player_state');
     INIT_PLAYER_STATE_LIST.forEach(({ id }) => {
       this.updatePlayerStateUI(id);
