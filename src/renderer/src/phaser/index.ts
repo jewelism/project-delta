@@ -1,20 +1,11 @@
 import * as Phaser from 'phaser';
-import ScaleOuterPlugin from 'phaser3-rex-plugins/plugins/scaleouter-plugin.js';
+
 import { StartScene } from '@/phaser/scenes/StartScene';
 import { MultiplayLobbyScene } from '@/phaser/scenes/MultiplayLobbyScene';
 import { InGameScene } from '@/phaser/scenes/InGameScene';
 import { InGameUIScene } from '@/phaser/scenes/InGameUIScene';
 
 const config: Phaser.Types.Core.GameConfig = {
-  plugins: {
-    scene: [
-      {
-        key: 'rexScaleOuter',
-        plugin: ScaleOuterPlugin,
-        mapping: 'rexScaleOuter',
-      },
-    ],
-  },
   scene: [
     // StartScene, MultiplayLobbyScene,
     InGameScene,
@@ -25,9 +16,9 @@ const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.WEBGL,
   // type: Phaser.CANVAS,
   scale: {
-    // mode: Phaser.Scale.FIT,
-    mode: Phaser.Scale.RESIZE,
-    // autoCenter: Phaser.Scale.CENTER_BOTH,
+    mode: Phaser.Scale.FIT,
+    // mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
     // width: window.innerWidth,
     // height: window.innerHeight,
     // width: Number(import.meta.env.RENDERER_VITE_WINDOW_WIDTH),
